@@ -1,4 +1,4 @@
-package com.example.bookbank.views
+package com.example.bookbank.views.menus
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding

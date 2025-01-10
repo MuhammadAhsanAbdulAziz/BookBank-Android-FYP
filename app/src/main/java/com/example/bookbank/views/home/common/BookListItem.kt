@@ -1,6 +1,7 @@
-package com.example.bookbank.views.common
+package com.example.bookbank.views.home.common
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -22,8 +23,10 @@ import com.example.bookbank.ui.theme.interRegular
 import com.example.bookbank.util.Dimens.XXSmallPadding
 
 @Composable
-fun BookListItem(modifier: Modifier = Modifier) {
-    Column {
+fun BookListItem(modifier: Modifier = Modifier,onClick: ()-> Unit) {
+    Column(modifier = Modifier.clickable {
+        onClick()
+    }) {
         Image(
             painter = painterResource(R.drawable.bookimg),
             contentDescription = null,

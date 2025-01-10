@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(dataStoreManager: DataStoreManager) : ViewModel() {
 
-    var startDestination by mutableStateOf(Route.MainScreen.route)
+    var startDestination by mutableStateOf(Route.AuthScreen.route)
         private set
 
     init {
@@ -35,7 +35,7 @@ class MainViewModel @Inject constructor(dataStoreManager: DataStoreManager) : Vi
 //                }
 //            }
 
-            startDestination = Route.AuthScreen.route
+            startDestination = Route.MainScreen.route
         }
     }
 }

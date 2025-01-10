@@ -29,12 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination
@@ -48,10 +47,10 @@ import com.example.bookbank.models.BottomBarScreen
 import com.example.bookbank.ui.theme.appColor
 import com.example.bookbank.ui.theme.buttonColor
 import com.example.bookbank.ui.theme.interBold
-import com.example.bookbank.ui.theme.interRegular
+import com.example.bookbank.ui.theme.lightAppColor
 import com.example.bookbank.util.navgraph.MainNavGraph
 import com.example.bookbank.util.navgraph.Route
-import kotlinx.coroutines.launch
+import com.example.bookbank.views.menus.CustomAppBar
 
 @Composable
 fun MainScreen() {
@@ -67,25 +66,40 @@ fun MainScreen() {
 
     Scaffold(topBar = {
         CustomAppBar()
-    },modifier = Modifier
-        .fillMaxSize()
-        .windowInsetsPadding(WindowInsets.systemBars)
-        ,
+    },
+        modifier = Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.systemBars),
         bottomBar = {
             if (shouldShowBottomBar) {
                 BottomBar(navController = navController)
             }
         }) {
         Column(
-            modifier = if (currentDestination?.route == Route.HomeScreen.route) Modifier
-                .fillMaxSize()
-                .paint(
-                    // Replace with your image id
-                    painterResource(id = R.drawable.bg),
-                    contentScale = ContentScale.FillBounds)
-                .padding(it) else Modifier
-                .fillMaxSize()
-                .padding(it),
+            modifier = when (currentDestination?.route) {
+                Route.HomeScreen.route -> Modifier
+                    .fillMaxSize()
+                    .paint(
+                        // Replace with your image id
+                        painterResource(id = R.drawable.bg), contentScale = ContentScale.FillBounds
+                    )
+                    .padding(it)
+                Route.BookDetailScreen.route -> Modifier
+                    .fillMaxSize()
+                    .paint(
+                        // Replace with your image id
+                        painterResource(id = R.drawable.bg), contentScale = ContentScale.FillBounds
+                    )
+                    .padding(it)
+                Route.ProfileScreen.route -> Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .padding(it)
+                else -> Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .padding(it)
+            },
         ) {
             MainNavGraph(navController = navController)
         }
@@ -175,9 +189,8 @@ fun AddItem(
             )
             AnimatedVisibility(visible = selected) {
                 Text(
-                    text = screen.title, style = TextStyle(fontFamily = interBold,
-                        fontSize = 14.sp,
-                        color = contentColor
+                    text = screen.title, style = TextStyle(
+                        fontFamily = interBold, fontSize = 14.sp, color = contentColor
                     )
                 )
             }

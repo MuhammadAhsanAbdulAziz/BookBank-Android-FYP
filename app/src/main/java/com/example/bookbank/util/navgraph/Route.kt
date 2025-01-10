@@ -11,4 +11,5 @@ sealed class Route(val route: String) {
     object DonateScreen : Route(route = "donateScreen")
     object RequestScreen : Route(route = "requestScreen")
     object ProfileScreen : Route(route = "profileScreen")
+    object UpdateProfileScreen : Route(route = "updateProfileScreen")
 }

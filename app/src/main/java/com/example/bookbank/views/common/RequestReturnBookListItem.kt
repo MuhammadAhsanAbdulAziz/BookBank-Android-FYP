@@ -1,5 +1,6 @@
 package com.example.bookbank.views.common
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,7 +28,7 @@ import com.example.bookbank.ui.theme.yellowColor
 import com.example.bookbank.util.Dimens.MediumPadding1
 
 @Composable
-fun RequestReturnBookListItem(modifier: Modifier = Modifier) {
+fun RequestReturnBookListItem(modifier: Modifier = Modifier, onClick: (Boolean) -> Unit) {
 
     Column {
 
@@ -35,15 +36,19 @@ fun RequestReturnBookListItem(modifier: Modifier = Modifier) {
 
 
         Row(
-            horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                "134", style = TextStyle(
-                    fontSize = 17.sp,
-                    fontFamily = interBold,
-                    textDecoration = TextDecoration.Underline
-                ), textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
-            )
+            Text("134", style = TextStyle(
+                fontSize = 17.sp,
+                fontFamily = interBold,
+                textDecoration = TextDecoration.Underline
+            ), textAlign = TextAlign.Center, modifier = Modifier
+                .weight(1f)
+                .clickable {
+                    onClick(true)
+                })
 
 
             Text(
