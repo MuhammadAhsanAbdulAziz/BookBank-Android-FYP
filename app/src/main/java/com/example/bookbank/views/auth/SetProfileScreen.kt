@@ -1,5 +1,6 @@
 package com.example.bookbank.views.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,25 +25,36 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.bookbank.R
+import com.example.bookbank.models.RegisterRequest
 import com.example.bookbank.ui.theme.buttonColor
 import com.example.bookbank.ui.theme.interBold
 import com.example.bookbank.ui.theme.interRegular
 import com.example.bookbank.util.Dimens.MediumPadding1
 import com.example.bookbank.util.Dimens.MediumPadding2
 import com.example.bookbank.util.Dimens.SmallPadding
-import com.example.bookbank.util.navgraph.Route
+import com.example.bookbank.util.Helper.isValidCNIC
+import com.example.bookbank.util.Helper.isValidPhoneNumber
+import com.example.bookbank.util.NetworkResult
+import com.example.bookbank.viewmodels.AuthViewModel
 import com.example.bookbank.views.common.CustomButton
 import com.example.bookbank.views.common.CustomTextField
 
 @Composable
-fun SetProfileScreen(navController: NavController, modifier: Modifier = Modifier) {
+fun SetProfileScreen(
+    navController: NavController, authViewModel: AuthViewModel, modifier: Modifier = Modifier
+) {
 
+    val backStackEntry = navController.currentBackStackEntryAsState()
+    val email = backStackEntry.value?.arguments?.getString("email")
+    val password = backStackEntry.value?.arguments?.getString("password")
 
     var nameText by remember { mutableStateOf("") }
     var fNameText by remember { mutableStateOf("") }
@@ -52,9 +66,38 @@ fun SetProfileScreen(navController: NavController, modifier: Modifier = Modifier
     var addressError by remember { mutableStateOf<String?>(null) }
     var phoneError by remember { mutableStateOf<String?>(null) }
     var cnicError by remember { mutableStateOf<String?>(null) }
+    val userResponse by authViewModel.userResponse.collectAsState()
+    var isLoading by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     val phoneMaxLength = 10
     val cnicMaxLength = 13
+
+    LaunchedEffect(userResponse) {
+        when (userResponse) {
+            is NetworkResult.Loading -> {
+                isLoading = true
+            }
+
+            is NetworkResult.Success -> {
+                isLoading = false
+
+                navController.popBackStack()
+
+
+            }
+
+            is NetworkResult.Error -> {
+                isLoading = false
+                Toast.makeText(context, userResponse.error.toString(), Toast.LENGTH_SHORT).show()
+            }
+
+            else -> {
+                // Handle Idle or other states
+                isLoading = false
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -183,7 +226,6 @@ fun SetProfileScreen(navController: NavController, modifier: Modifier = Modifier
                 borderRad = 5,
                 keyboardType = KeyboardType.Phone,
                 error = phoneError,
-
                 onValueChange = {
                     if (it.length <= phoneMaxLength) phoneText = it
                 })
@@ -205,7 +247,7 @@ fun SetProfileScreen(navController: NavController, modifier: Modifier = Modifier
                 textColor = buttonColor,
                 textValue = cnicText,
                 borderRad = 5,
-                keyboardType = KeyboardType.Text,
+                keyboardType = KeyboardType.Number,
                 error = cnicError,
 
                 onValueChange = {
@@ -219,12 +261,54 @@ fun SetProfileScreen(navController: NavController, modifier: Modifier = Modifier
                 color = buttonColor,
                 textSize = 17,
                 textColor = Color.White,
-                isLoading = false,
+                isLoading = isLoading,
                 radius = 8,
                 height = 70,
                 modifier = Modifier
             ) {
-                navController.navigate(Route.OTPScreen.route)
+                nameError = null
+                fNameError = null
+                addressError = null
+                phoneError = null
+                cnicError = null
+
+                if (nameText.isEmpty()) {
+                    nameError = "Please enter your name"
+                    return@CustomButton
+                }
+                if (fNameText.isEmpty()) {
+                    fNameError = "Please enter your father's name"
+                    return@CustomButton
+                }
+                if (addressText.isEmpty()) {
+                    addressError = "Please enter your address"
+                    return@CustomButton
+                }
+                val numError = isValidPhoneNumber(phoneText)
+                if (!numError.isNullOrEmpty()) {
+                    phoneError = numError
+                    return@CustomButton
+                }
+                val cNICError = isValidCNIC(cnicText)
+                if (!cNICError.isNullOrEmpty()) {
+                    cnicError = cNICError
+                    return@CustomButton
+                }
+
+                isLoading = true
+
+                authViewModel.registerUser(
+                    RegisterRequest(
+                        address = addressText,
+                        cnic = cnicText,
+                        email = email!!,
+                        father_name = fNameText,
+                        mobile = "+92$phoneText",
+                        name = nameText,
+                        password = password!!
+                    )
+                )
+
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.example.bookbank.views.home.common
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,30 +33,45 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import coil.compose.AsyncImage
 import com.example.bookbank.R
+import com.example.bookbank.models.BookData
 import com.example.bookbank.ui.theme.buttonColor
 import com.example.bookbank.ui.theme.interBold
 import com.example.bookbank.ui.theme.interRegular
 import com.example.bookbank.util.Dimens.MediumPadding1
 import com.example.bookbank.util.Dimens.SmallPadding
+import com.example.bookbank.viewmodels.BookViewModel
+import com.example.bookbank.viewmodels.UtilViewModel
 import com.example.bookbank.views.common.CustomButton
 import com.example.bookbank.views.common.CustomTextField
+import com.google.gson.Gson
 
 @Composable
-fun BookDetailScreen(navController: NavController, modifier: Modifier = Modifier) {
+fun BookDetailScreen(
+    navController: NavController,
+    utilViewModel: UtilViewModel,
+    modifier: Modifier = Modifier,
+    bookViewModel: BookViewModel,
+    book: BookData
+) {
 
     var searchText by remember { mutableStateOf("") }
+    var context = LocalContext.current
+
 
     Box(modifier = Modifier.fillMaxSize()) {
 
         Column(
-            Modifier
+            modifier
                 .fillMaxSize()
                 .padding(MediumPadding1),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -92,8 +109,8 @@ fun BookDetailScreen(navController: NavController, modifier: Modifier = Modifier
 
                 Spacer(Modifier.weight(1f))
 
-                Image(
-                    painter = painterResource(R.drawable.bookimg),
+                AsyncImage(
+                    model = book.image,
                     contentDescription = null,
                     modifier = Modifier
                         .size(height = 200.dp, width = 170.dp)
@@ -117,13 +134,13 @@ fun BookDetailScreen(navController: NavController, modifier: Modifier = Modifier
                 Column(modifier = Modifier.padding(MediumPadding1)) {
 
                     Text(
-                        "English Class X", style = TextStyle(
+                        book.title, style = TextStyle(
                             fontSize = 18.sp, color = buttonColor, fontFamily = interBold
                         ), modifier = Modifier.align(Alignment.Start)
                     )
 
                     Text(
-                        "Tenth Edition", style = TextStyle(
+                        book.author, style = TextStyle(
                             fontSize = 15.sp, color = Color.Gray, fontFamily = interRegular
                         ), modifier = Modifier.align(Alignment.Start)
                     )
@@ -139,7 +156,7 @@ fun BookDetailScreen(navController: NavController, modifier: Modifier = Modifier
                     Spacer(Modifier.height(SmallPadding))
 
                     LazyColumn(modifier = Modifier.fillMaxHeight(0.7f)) {
-                        item{
+                        item {
                             Text(
                                 "The English IX textbook for the Sindh Board  is designed to align with the educational curriculum set by the Board of Secondary Education, Sindh. This textbook is intended to enhance their English language skills in reading, writing, speaking, and comprehension English language skills in reading, writing, speaking, and comprehension",
                                 style = TextStyle(
@@ -163,7 +180,12 @@ fun BookDetailScreen(navController: NavController, modifier: Modifier = Modifier
                         modifier = Modifier
                             .fillMaxWidth(0.6f)
                             .align(Alignment.CenterHorizontally)
-                    ) { }
+                    ) {
+                        val res = bookViewModel.insertBooksForOrder(book,context)
+                        if(res) {
+                            utilViewModel.increaseCart()
+                        }
+                    }
 
                 }
             }

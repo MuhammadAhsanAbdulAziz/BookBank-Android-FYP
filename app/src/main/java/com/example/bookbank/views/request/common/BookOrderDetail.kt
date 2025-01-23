@@ -77,7 +77,7 @@ fun BookOrderDetail(modifier: Modifier = Modifier,onClose : () -> Unit) {
 
             LazyColumn(modifier = Modifier.fillMaxHeight(0.7f)) {
                 items(4){
-                    BookOrderDetailListItem()
+//                    BookOrderDetailListItem()
                 }
             }
 

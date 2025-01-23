@@ -1,13 +1,18 @@
 package com.example.bookbank.util
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.bookbank.models.LoginResponse
+import com.example.bookbank.models.UserData
 import com.example.bookbank.util.Constants.APP_ENTRY
-import com.example.bookbank.util.Constants.APP_LANGUAGE
 import com.example.bookbank.util.Constants.MY_PREFERENCES
+import com.example.bookbank.util.Constants.USER_DATA
+import com.example.bookbank.util.Constants.USER_TOKEN
+import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,41 +22,38 @@ private val Context.dataStore by preferencesDataStore(name = MY_PREFERENCES)
 
 class DataStoreManager @Inject constructor(@ApplicationContext private val context: Context) {
 
-    suspend fun saveAppLanguage(language : String) {
+    private val gson = Gson()
+
+    suspend fun saveUserToken(token: String) {
         context.dataStore.edit { preferences ->
-            preferences[APP_LANGUAGE_KEY] = language
+            preferences[USER_TOKEN_KEY] = token
         }
     }
 
-    fun readAppLanguage(): Flow<String> {
+    fun readUserToken(): Flow<String> {
         return context.dataStore.data.map { pref ->
-            pref[APP_LANGUAGE_KEY] ?: ""
+            pref[USER_TOKEN_KEY] ?: ""
         }
     }
 
-    suspend fun saveThemeMode(isDarkMode: Boolean) {
+    suspend fun saveUserData(data: UserData?) {
         context.dataStore.edit { preferences ->
-            preferences[THEME_MODE_KEY] = isDarkMode
+            val jsonString = gson.toJson(data) // Serialize to JSON
+            preferences[USER_DATA_KEY] = jsonString
         }
     }
 
-    fun readAppEntry(): Flow<Boolean> {
-        return context.dataStore.data.map { pref ->
-            pref[APP_ENTRY_KEY] ?: false
-        }
-    }
-
-    // Read theme mode (returns true for dark mode, false for light mode)
-    fun readThemeMode(): Flow<Boolean> {
+    fun readUserData(): Flow<UserData?> {
         return context.dataStore.data.map { preferences ->
-            preferences[THEME_MODE_KEY] ?: true // default to dark mode
+            val jsonString = preferences[USER_DATA_KEY]
+            jsonString?.let { gson.fromJson(it, UserData::class.java) } // Deserialize JSON
         }
     }
-
 
     companion object {
         val APP_ENTRY_KEY = booleanPreferencesKey(APP_ENTRY)
-        val APP_LANGUAGE_KEY = stringPreferencesKey(APP_LANGUAGE)
+        val USER_TOKEN_KEY = stringPreferencesKey(USER_TOKEN)
+        val USER_DATA_KEY = stringPreferencesKey(USER_DATA)
         val THEME_MODE_KEY = booleanPreferencesKey("theme_mode")
     }
 

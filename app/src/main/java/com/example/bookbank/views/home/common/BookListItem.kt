@@ -1,6 +1,5 @@
 package com.example.bookbank.views.home.common
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,18 +16,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.bookbank.R
+import com.example.bookbank.models.BookData
 import com.example.bookbank.ui.theme.interBold
 import com.example.bookbank.ui.theme.interRegular
 import com.example.bookbank.util.Dimens.XXSmallPadding
 
 @Composable
-fun BookListItem(modifier: Modifier = Modifier,onClick: ()-> Unit) {
+fun BookListItem(book: BookData, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Column(modifier = Modifier.clickable {
         onClick()
     }) {
-        Image(
-            painter = painterResource(R.drawable.bookimg),
+        AsyncImage(
+            model = book.image,
             contentDescription = null,
             modifier = Modifier
                 .size(height = 200.dp, width = 170.dp)
@@ -39,7 +40,7 @@ fun BookListItem(modifier: Modifier = Modifier,onClick: ()-> Unit) {
         Spacer(Modifier.height(XXSmallPadding))
 
         Text(
-            "Computer Science IX", style = TextStyle(
+            book.title, style = TextStyle(
                 fontSize = 17.sp, fontFamily = interBold
             ), modifier = Modifier.align(Alignment.Start)
         )
@@ -47,7 +48,7 @@ fun BookListItem(modifier: Modifier = Modifier,onClick: ()-> Unit) {
         Spacer(Modifier.height(XXSmallPadding))
 
         Text(
-            "Bill gates", style = TextStyle(
+            book.author, style = TextStyle(
                 fontSize = 15.sp, fontFamily = interRegular
             ), modifier = Modifier.align(Alignment.Start)
         )

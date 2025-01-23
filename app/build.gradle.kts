@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.bookbank"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -86,6 +86,12 @@ dependencies {
 
     implementation ("androidx.compose.material:material-icons-extended:1.7.6")
     implementation("androidx.activity:activity-compose:1.8.0-alpha07")
+
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    implementation ("com.airbnb.android:lottie-compose:6.0.1")
+
+
 
 }
 

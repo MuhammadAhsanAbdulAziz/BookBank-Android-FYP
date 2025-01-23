@@ -7,6 +7,13 @@ import android.os.Environment
 import android.os.StatFs
 import android.util.Log
 import android.widget.Toast
+import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.flow.MutableStateFlow
+import org.json.JSONException
+import org.json.JSONObject
+import retrofit2.Response
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 object Helper {
@@ -22,6 +29,32 @@ object Helper {
         return if (!hasLetter) "Password should contain atleast one letter"
         else if (!hasDigit) "Password should contain atleast one digit"
         else if (password.length < 6) "Password length should be atleast 6" else null
+    }
+
+    fun isValidPhoneNumber(phoneNumber: String): String? {
+        // Check if the phone number contains only digits
+        val isNumeric = phoneNumber.all { it.isDigit() }
+        // Check the length of the phone number
+        val validLength = phoneNumber.length == 10
+
+        return when {
+            !isNumeric -> "Phone number should contain only digits"
+            !validLength -> "Phone number should be exactly 10 digits"
+            else -> null
+        }
+    }
+
+    fun isValidCNIC(cnic: String): String? {
+        // Check if the phone number contains only digits
+        val isNumeric = cnic.all { it.isDigit() }
+        // Check the length of the phone number
+        val validLength = cnic.length == 13
+
+        return when {
+            !isNumeric -> "CNIC should contain only digits"
+            !validLength -> "CNIC should be exactly 10 digits"
+            else -> null
+        }
     }
 
     fun openMailApp(context: Context, senderEmail: String, senderName: String, bodyMessage: String) {
@@ -42,11 +75,46 @@ object Helper {
         }
     }
 
-
-    fun updateLocale(context: Context,newLocale: Locale) {
-        val configuration = context.resources.configuration
-        configuration.setLocale(newLocale)
+    fun getDateWithMonthsAdded(monthsToAdd: Long): String {
+        // Get the current date
+        val currentDate = LocalDate.now()
+        // Add the specified number of months
+        val newDate = currentDate.plusMonths(monthsToAdd)
+        // Format the date to a readable string (e.g., yyyy-MM-dd)
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return newDate.format(formatter)
     }
+
+
+    fun <T : Any> handleResponse(response: Response<T>, responseData: MutableStateFlow<NetworkResult<Any>>) {
+        if (response.isSuccessful && response.body() != null) {
+            responseData.value = NetworkResult.Success(response.body()!!)
+        } else if (response.errorBody() != null) {
+            try {
+                val errorBody = response.errorBody()?.charStream()?.readText()
+                if (errorBody != null) {
+                    val errorObj = JSONObject(errorBody)
+                    val errorResponse = when {
+                        errorObj.has("error") -> {
+                            // Directly get the error string if it's not an object
+                            NetworkResult.Error(errorObj.getString("error"))
+                        }
+                        else -> {
+                            NetworkResult.Error("Unknown error: ${errorObj.toString()}")
+                        }
+                    }
+                    responseData.value = NetworkResult.Error(errorResponse.error)
+                } else {
+                    responseData.value = NetworkResult.Error("No error body found")
+                }
+            } catch (e: JSONException) {
+                responseData.value = NetworkResult.Error("Error parsing error body: ${e.localizedMessage}")
+            }
+        } else {
+            responseData.value = NetworkResult.Error("Unknown network error occurred")
+        }
+    }
+
 
 
 }

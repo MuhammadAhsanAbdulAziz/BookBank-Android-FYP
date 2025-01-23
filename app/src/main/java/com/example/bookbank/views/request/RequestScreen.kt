@@ -14,15 +14,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.bookbank.util.Dimens.MediumPadding1
 import com.example.bookbank.util.Dimens.SmallPadding
+import com.example.bookbank.viewmodels.BookViewModel
 import com.example.bookbank.views.common.CategoriesTab
-import com.example.bookbank.views.donate.common.DonateMoney
 import com.example.bookbank.views.request.common.RequestBooks
 import com.example.bookbank.views.request.common.ReturnBooks
 
 @Composable
-fun RequestScreen(modifier: Modifier = Modifier) {
-    val tabs = listOf("Requests","Return")
+fun RequestScreen(modifier: Modifier = Modifier, bookViewModel: BookViewModel) {
+    val tabs = listOf("Requests", "Return")
     var selectedTab by remember { mutableIntStateOf(0) }
+
+
+
 
     Box(
         modifier = Modifier
@@ -33,14 +36,14 @@ fun RequestScreen(modifier: Modifier = Modifier) {
         Column {
 
 
-            CategoriesTab(tabs){
+            CategoriesTab(tabs) {
                 selectedTab = it
             }
 
             Spacer(Modifier.height(MediumPadding1))
 
-            if(selectedTab == 0) {
-                RequestBooks()
+            if (selectedTab == 0) {
+                RequestBooks(bookViewModel = bookViewModel)
             } else {
                 ReturnBooks()
             }

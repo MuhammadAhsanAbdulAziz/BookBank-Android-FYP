@@ -1,9 +1,10 @@
 package com.example.bookbank.views.auth
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,14 +34,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.bookbank.R
+import com.example.bookbank.models.LoginRequest
+import com.example.bookbank.models.LoginResponse
+import com.example.bookbank.models.SuccessResponse
 import com.example.bookbank.ui.theme.blueColor
 import com.example.bookbank.ui.theme.buttonColor
 import com.example.bookbank.ui.theme.interRegular
@@ -46,22 +52,65 @@ import com.example.bookbank.util.Dimens.MediumPadding1
 import com.example.bookbank.util.Dimens.MediumPadding2
 import com.example.bookbank.util.Dimens.SmallPadding
 import com.example.bookbank.util.Dimens.XSmallPadding
+import com.example.bookbank.util.Helper.isValidEmail
+import com.example.bookbank.util.Helper.isValidPassword
+import com.example.bookbank.util.NetworkResult
 import com.example.bookbank.util.navgraph.Route
+import com.example.bookbank.viewmodels.AuthViewModel
+import com.example.bookbank.viewmodels.MainViewModel
 import com.example.bookbank.views.common.CustomButton
 import com.example.bookbank.views.common.CustomTextField
-import com.example.bookbank.views.common.GoogleButton
 
 @Composable
-fun AuthScreen(navController:NavController,modifier: Modifier = Modifier) {
+fun AuthScreen(
+    navController: NavController, authViewModel: AuthViewModel, mainViewModel: MainViewModel
+) {
 
-
+    val context = LocalContext.current
     var emailText by remember { mutableStateOf("") }
     var passwordText by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
     var isPasswordShowing by remember { mutableStateOf(false) }
-
     var isLogin by remember { mutableStateOf(false) }
+    val userResponse by authViewModel.userResponse.collectAsState()
+    var isLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect(userResponse) {
+        when (userResponse) {
+            is NetworkResult.Loading -> {
+                isLoading = true
+            }
+
+            is NetworkResult.Success -> {
+                isLoading = false
+                when (userResponse.data) {
+                    is LoginResponse -> {
+                        val data = userResponse.data as LoginResponse
+                        Log.d("Ahsan", "AuthScreen: ${data.data}")
+                        Log.d("Ahsan", "AuthScreen: ${data.jwt}")
+                        mainViewModel.saveUserData(data.data)
+                        mainViewModel.saveUserToken(data.jwt)
+                    }
+
+                    is SuccessResponse -> {
+                        navController.popBackStack()
+                    }
+                }
+
+            }
+
+            is NetworkResult.Error -> {
+                isLoading = false
+                Toast.makeText(context, userResponse.error.toString(), Toast.LENGTH_SHORT).show()
+            }
+
+            else -> {
+                // Handle Idle or other states
+                isLoading = false
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -177,16 +226,40 @@ fun AuthScreen(navController:NavController,modifier: Modifier = Modifier) {
                 color = buttonColor,
                 textSize = 17,
                 textColor = Color.White,
-                isLoading = false,
+                isLoading = isLoading,
                 radius = 8,
                 height = 70,
                 modifier = Modifier
             ) {
-                if(!isLogin){
-                    navController.navigate(Route.SetProfileScreen.route)
-                } else {
-                    navController.navigate(Route.MainScreen.route)
+                emailError = null
+                passwordError = null
+                val isEmailValid = isValidEmail(emailText)
+                val isPasswordValid = isValidPassword(passwordText)
+                if (!isEmailValid) {
+                    emailError = "Please enter valid email"
+                    return@CustomButton
                 }
+                if (isPasswordValid != null) {
+                    passwordError = isPasswordValid
+                    return@CustomButton
+                }
+
+                isLoading = true
+
+                if (!isLogin) {
+                    navController.navigate(
+                        Route.SetProfileScreen.setUserData(
+                            emailText, passwordText
+                        )
+                    )
+                } else {
+                    authViewModel.loginUser(
+                        LoginRequest(
+                            email = emailText, password = passwordText
+                        )
+                    )
+                }
+
             }
 
             Spacer(Modifier.height(MediumPadding2))
@@ -202,34 +275,35 @@ fun AuthScreen(navController:NavController,modifier: Modifier = Modifier) {
 
                 Spacer(Modifier.width(XSmallPadding))
 
-                Text("Sign In", style = TextStyle(
+                Text(if(isLogin) "Sign Up" else "Sign In", style = TextStyle(
                     fontSize = 17.sp, fontFamily = interRegular, color = blueColor
                 ), modifier = Modifier.clickable {
                     isLogin = !isLogin
                 })
-            }
+            }/*
+                        Spacer(Modifier.height(MediumPadding1))
 
-            Spacer(Modifier.height(MediumPadding1))
+                        Text(
+                            "Or with", style = TextStyle(
+                                fontSize = 17.sp, fontFamily = interRegular, color = buttonColor
+                            )
+                        )
 
-            Text(
-                "Or with", style = TextStyle(
-                    fontSize = 17.sp, fontFamily = interRegular, color = buttonColor
-                )
-            )
+                        Spacer(Modifier.height(MediumPadding1))
 
-            Spacer(Modifier.height(MediumPadding1))
-
-            GoogleButton(
-                text = "Google",
-                color = Color.White,
-                textSize = 17,
-                textColor = buttonColor,
-                isLoading = false,
-                radius = 7,
-                height = 70,
-                modifier = Modifier
-            ) { }
+                        GoogleButton(
+                            text = "Google",
+                            color = Color.White,
+                            textSize = 17,
+                            textColor = buttonColor,
+                            isLoading = false,
+                            radius = 7,
+                            height = 70,
+                            modifier = Modifier
+                        ) { }*/
 
         }
     }
 }
+
+

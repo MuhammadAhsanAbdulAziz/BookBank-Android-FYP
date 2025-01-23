@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bookbank.models.RequestBooksData
 import com.example.bookbank.ui.theme.buttonColor
 import com.example.bookbank.ui.theme.interBold
 import com.example.bookbank.ui.theme.interRegular
@@ -28,7 +29,11 @@ import com.example.bookbank.ui.theme.yellowColor
 import com.example.bookbank.util.Dimens.MediumPadding1
 
 @Composable
-fun RequestReturnBookListItem(modifier: Modifier = Modifier, onClick: (Boolean) -> Unit) {
+fun RequestReturnBookListItem(
+    modifier: Modifier = Modifier,
+    requestBooksData: RequestBooksData,
+    onClick: (Boolean) -> Unit
+) {
 
     Column {
 
@@ -40,7 +45,7 @@ fun RequestReturnBookListItem(modifier: Modifier = Modifier, onClick: (Boolean) 
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("134", style = TextStyle(
+            Text(requestBooksData.form_number.toString(), style = TextStyle(
                 fontSize = 17.sp,
                 fontFamily = interBold,
                 textDecoration = TextDecoration.Underline
@@ -52,7 +57,7 @@ fun RequestReturnBookListItem(modifier: Modifier = Modifier, onClick: (Boolean) 
 
 
             Text(
-                "12-Dec-2024", style = TextStyle(
+                requestBooksData.book_return_date, style = TextStyle(
                     fontSize = 17.sp, fontFamily = interRegular
                 ), textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
             )
@@ -69,7 +74,7 @@ fun RequestReturnBookListItem(modifier: Modifier = Modifier, onClick: (Boolean) 
                     .fillMaxHeight(0.07f)
             ) {
                 Text(
-                    "Borrowed", style = TextStyle(
+                    requestBooksData.request_status, style = TextStyle(
                         fontSize = 13.sp, fontFamily = interRegular, color = buttonColor
                     )
                 )

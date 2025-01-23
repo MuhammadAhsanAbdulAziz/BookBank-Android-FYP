@@ -3,18 +3,23 @@ package com.example.bookbank.util.navgraph
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.bookbank.viewmodels.AuthViewModel
+import com.example.bookbank.viewmodels.MainViewModel
+import com.example.bookbank.viewmodels.UtilViewModel
 import com.example.bookbank.views.MainScreen
 import com.example.bookbank.views.auth.AuthScreen
 import com.example.bookbank.views.auth.OTPScreen
 import com.example.bookbank.views.auth.SetProfileScreen
 
 @Composable
-fun NavGraph(startDestination: String) {
+fun NavGraph(startDestination: String,utilViewModel: UtilViewModel = UtilViewModel()) {
     val navController = rememberNavController()
-
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val mainViewModel: MainViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
@@ -34,7 +39,7 @@ fun NavGraph(startDestination: String) {
                 )
             },
         ) {
-            AuthScreen(navController = navController)
+            AuthScreen(navController = navController,authViewModel = authViewModel,mainViewModel = mainViewModel)
         }
 
         composable(
@@ -50,7 +55,7 @@ fun NavGraph(startDestination: String) {
                 )
             },
         ) {
-            SetProfileScreen(navController = navController)
+            SetProfileScreen(navController = navController,authViewModel = authViewModel)
         }
 
         composable(
@@ -82,7 +87,7 @@ fun NavGraph(startDestination: String) {
                 )
             },
         ) {
-            MainScreen()
+            MainScreen(utilViewModel = utilViewModel)
         }
 
     }

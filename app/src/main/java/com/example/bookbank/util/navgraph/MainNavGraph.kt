@@ -3,24 +3,35 @@ package com.example.bookbank.util.navgraph
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.example.bookbank.models.BookData
+import com.example.bookbank.viewmodels.BookViewModel
+import com.example.bookbank.viewmodels.MainViewModel
+import com.example.bookbank.viewmodels.UtilViewModel
 import com.example.bookbank.views.donate.DonateScreen
 import com.example.bookbank.views.home.HomeScreen
 import com.example.bookbank.views.home.common.BookDetailScreen
 import com.example.bookbank.views.profile.ProfileScreen
 import com.example.bookbank.views.profile.common.UpdateProfile
 import com.example.bookbank.views.request.RequestScreen
+import com.google.gson.Gson
 
 @Composable
 fun MainNavGraph(
-    navController: NavHostController
+    navController: NavHostController,utilViewModel: UtilViewModel
 ) {
+
+    val mainViewModel: MainViewModel = hiltViewModel()
+    val bookViewModel: BookViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
-        startDestination = Route.ProfileScreen.route,
+        startDestination = Route.HomeScreen.route,
 
         ) {
         composable(
@@ -36,7 +47,7 @@ fun MainNavGraph(
                 )
             },
         ) {
-            HomeScreen(navController = navController)
+            HomeScreen(navController = navController,mainViewModel=mainViewModel,utilViewModel = utilViewModel,bookViewModel = bookViewModel)
         }
 
         composable(
@@ -68,7 +79,7 @@ fun MainNavGraph(
                 )
             },
         ) {
-            RequestScreen()
+            RequestScreen(bookViewModel = bookViewModel)
         }
 
         composable(
@@ -84,11 +95,14 @@ fun MainNavGraph(
                 )
             },
         ) {
-            ProfileScreen()
+            ProfileScreen(navController = navController,mainViewModel=mainViewModel)
         }
 
         composable(
             route = Route.BookDetailScreen.route,
+            arguments = listOf(
+                navArgument("book") { type = NavType.StringType } // Define "book" as a String argument
+            ),
             exitTransition = {
                 slideOutOfContainer(
                     AnimatedContentTransitionScope.SlideDirection.Left, tween(1000)
@@ -99,8 +113,17 @@ fun MainNavGraph(
                     AnimatedContentTransitionScope.SlideDirection.Right, tween(1000)
                 )
             },
-        ) {
-            BookDetailScreen(navController = navController)
+        ) { backStackEntry ->
+            val bookData = backStackEntry.arguments?.getString("book") // Retrieve the "book" argument
+            val gson = Gson()
+            val book = gson.fromJson(bookData, BookData::class.java) // Deserialize the book data
+
+            BookDetailScreen(
+                navController = navController,
+                utilViewModel = utilViewModel,
+                bookViewModel=bookViewModel,
+                book = book // Pass the book object to the screen
+            )
         }
 
         composable(
@@ -116,7 +139,7 @@ fun MainNavGraph(
                 )
             },
         ) {
-            UpdateProfile(navController = navController)
+            UpdateProfile(navController = navController,mainViewModel = mainViewModel)
         }
 
     }

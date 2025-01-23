@@ -1,5 +1,6 @@
 package com.example.bookbank.views
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,13 +30,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -47,13 +50,15 @@ import com.example.bookbank.models.BottomBarScreen
 import com.example.bookbank.ui.theme.appColor
 import com.example.bookbank.ui.theme.buttonColor
 import com.example.bookbank.ui.theme.interBold
-import com.example.bookbank.ui.theme.lightAppColor
 import com.example.bookbank.util.navgraph.MainNavGraph
 import com.example.bookbank.util.navgraph.Route
+import com.example.bookbank.viewmodels.MainViewModel
+import com.example.bookbank.viewmodels.UtilViewModel
+import com.example.bookbank.views.dialog.CartDetailDialog
 import com.example.bookbank.views.menus.CustomAppBar
 
 @Composable
-fun MainScreen() {
+fun MainScreen(utilViewModel: UtilViewModel,mainViewModel: MainViewModel = hiltViewModel()) {
     val navController = rememberNavController()
     var shouldShowBottomBar by remember { mutableStateOf(true) }
     val navStackBackEntry by navController.currentBackStackEntryAsState()
@@ -64,8 +69,9 @@ fun MainScreen() {
 //        shouldShowBottomBar = currentDestination?.route != Route.AddLinkScreen.route
     }
 
+
     Scaffold(topBar = {
-        CustomAppBar()
+        CustomAppBar(utilViewModel = utilViewModel)
     },
         modifier = Modifier
             .fillMaxSize()
@@ -84,6 +90,7 @@ fun MainScreen() {
                         painterResource(id = R.drawable.bg), contentScale = ContentScale.FillBounds
                     )
                     .padding(it)
+
                 Route.BookDetailScreen.route -> Modifier
                     .fillMaxSize()
                     .paint(
@@ -91,18 +98,28 @@ fun MainScreen() {
                         painterResource(id = R.drawable.bg), contentScale = ContentScale.FillBounds
                     )
                     .padding(it)
+
                 Route.ProfileScreen.route -> Modifier
                     .fillMaxSize()
                     .background(Color.White)
                     .padding(it)
+
                 else -> Modifier
                     .fillMaxSize()
-                    .background(Color.White)
+                    .paint(
+                        // Replace with your image id
+                        painterResource(id = R.drawable.bg), contentScale = ContentScale.FillBounds
+                    )
                     .padding(it)
             },
-        ) {
-            MainNavGraph(navController = navController)
+
+
+            ) {
+            MainNavGraph(navController = navController, utilViewModel)
+
         }
+
+
     }
 }
 
