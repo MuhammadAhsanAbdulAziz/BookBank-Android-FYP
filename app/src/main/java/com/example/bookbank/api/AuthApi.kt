@@ -1,5 +1,6 @@
 package com.example.bookbank.api
 
+import com.example.bookbank.models.CheckEmailRequest
 import com.example.bookbank.models.LoginRequest
 import com.example.bookbank.models.LoginResponse
 import com.example.bookbank.models.RegisterRequest
@@ -11,10 +12,12 @@ import retrofit2.http.POST
 interface AuthApi {
 
     @POST("mobile/auth/login")
-    suspend fun login(@Body loginRequest: LoginRequest) : Response<LoginResponse>
+    suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
 
     @POST("mobile/auth/register")
-    suspend fun register(@Body registerRequest: RegisterRequest) : Response<SuccessResponse>
+    suspend fun register(@Body registerRequest: RegisterRequest): Response<SuccessResponse>
 
+    @POST("mobile/auth/existingUser")
+    suspend fun checkEmail(@Body checkEmailRequest: CheckEmailRequest): Response<SuccessResponse>
 
 }

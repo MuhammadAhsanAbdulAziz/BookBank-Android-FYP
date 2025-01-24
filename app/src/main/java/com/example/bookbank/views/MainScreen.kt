@@ -1,6 +1,5 @@
 package com.example.bookbank.views
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,20 +50,29 @@ import com.example.bookbank.models.BottomBarScreen
 import com.example.bookbank.ui.theme.appColor
 import com.example.bookbank.ui.theme.buttonColor
 import com.example.bookbank.ui.theme.interBold
+import com.example.bookbank.util.Dimens.MediumPadding1
+import com.example.bookbank.util.Dimens.XSmallPadding
 import com.example.bookbank.util.navgraph.MainNavGraph
 import com.example.bookbank.util.navgraph.Route
+import com.example.bookbank.viewmodels.BookViewModel
 import com.example.bookbank.viewmodels.MainViewModel
 import com.example.bookbank.viewmodels.UtilViewModel
 import com.example.bookbank.views.dialog.CartDetailDialog
+import com.example.bookbank.views.dialog.RequestNewBookDialog
 import com.example.bookbank.views.menus.CustomAppBar
 
 @Composable
-fun MainScreen(utilViewModel: UtilViewModel,mainViewModel: MainViewModel = hiltViewModel()) {
+fun MainScreen(
+    utilViewModel: UtilViewModel,
+    bookViewModel: BookViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel()
+) {
     val navController = rememberNavController()
     var shouldShowBottomBar by remember { mutableStateOf(true) }
     val navStackBackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navStackBackEntry?.destination
-
+    val isCartDialogShowing by utilViewModel.cartDialogShowing.collectAsState()
+    val isRequestNewBookShowing by utilViewModel.requestNewBookDialogShowing.collectAsState()
 
     LaunchedEffect(currentDestination) {
 //        shouldShowBottomBar = currentDestination?.route != Route.AddLinkScreen.route
@@ -83,22 +92,6 @@ fun MainScreen(utilViewModel: UtilViewModel,mainViewModel: MainViewModel = hiltV
         }) {
         Column(
             modifier = when (currentDestination?.route) {
-                Route.HomeScreen.route -> Modifier
-                    .fillMaxSize()
-                    .paint(
-                        // Replace with your image id
-                        painterResource(id = R.drawable.bg), contentScale = ContentScale.FillBounds
-                    )
-                    .padding(it)
-
-                Route.BookDetailScreen.route -> Modifier
-                    .fillMaxSize()
-                    .paint(
-                        // Replace with your image id
-                        painterResource(id = R.drawable.bg), contentScale = ContentScale.FillBounds
-                    )
-                    .padding(it)
-
                 Route.ProfileScreen.route -> Modifier
                     .fillMaxSize()
                     .background(Color.White)
@@ -115,8 +108,52 @@ fun MainScreen(utilViewModel: UtilViewModel,mainViewModel: MainViewModel = hiltV
 
 
             ) {
-            MainNavGraph(navController = navController, utilViewModel)
+            MainNavGraph(
+                navController = navController,
+                utilViewModel,
+                bookViewModel = bookViewModel
+            )
 
+        }
+
+
+        if (isCartDialogShowing) {
+            Dialog(
+                onDismissRequest = {
+
+                }, properties = DialogProperties(
+                    dismissOnBackPress = false, usePlatformDefaultWidth = false
+                )
+            ) {
+
+                CartDetailDialog(
+                    modifier = Modifier.padding(XSmallPadding),
+                    utilViewModel = utilViewModel,
+                    mainViewModel = mainViewModel,
+                    bookViewModel = bookViewModel
+                ) // Your custom dialog content
+
+            }
+        }
+
+        if (isRequestNewBookShowing) {
+
+            Dialog(
+                onDismissRequest = {
+
+                }, properties = DialogProperties(
+                    dismissOnBackPress = false, usePlatformDefaultWidth = false
+                )
+            ) {
+
+                RequestNewBookDialog(
+                    modifier = Modifier.padding(XSmallPadding),
+                    bookViewModel = bookViewModel
+                ) {
+                    utilViewModel.triggerRequestNewBookDialog(false)
+                }
+
+            }
         }
 
 
@@ -128,6 +165,7 @@ fun BottomBar(navController: NavHostController) {
     val screens = listOf(
         BottomBarScreen.Home,
         BottomBarScreen.Donate,
+        BottomBarScreen.Notification,
         BottomBarScreen.Request,
         BottomBarScreen.Profile
     )
@@ -201,13 +239,13 @@ fun AddItem(
                 painter = painterResource(id = if (selected) screen.icon_focused else screen.icon),
                 contentDescription = "icon",
                 tint = contentColor,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(30.dp)
 
             )
             AnimatedVisibility(visible = selected) {
                 Text(
                     text = screen.title, style = TextStyle(
-                        fontFamily = interBold, fontSize = 14.sp, color = contentColor
+                        fontFamily = interBold, fontSize = 12.sp, color = contentColor
                     )
                 )
             }

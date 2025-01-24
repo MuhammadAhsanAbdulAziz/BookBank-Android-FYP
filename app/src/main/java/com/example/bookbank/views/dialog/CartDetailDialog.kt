@@ -91,7 +91,8 @@ fun CartDetailDialog(
             is NetworkResult.Success -> {
                 isLoading = false
                 Toast.makeText(context, "Order Successfully placed", Toast.LENGTH_SHORT).show()
-
+                utilViewModel.triggerCartDialog(false)
+                utilViewModel.emptyCart()
             }
 
             is NetworkResult.Error -> {
@@ -283,7 +284,7 @@ fun CartDetailDialog(
                                     father_name = userData!!.father_name,
                                     mobile = userData!!.mobile,
                                     name = userData!!.name,
-                                    student_cnic = userData!!.cnic
+                                    student_cnic = userData!!.student_cnic
                                 )
                             )
                         } else {

@@ -26,6 +26,13 @@ sealed class BottomBarScreen(
         icon_focused = R.drawable.volunteer_activism_24px
     )
 
+    object Notification: BottomBarScreen(
+        route = "notificationScreen",
+        title = "Notification",
+        icon = R.drawable.notis,
+        icon_focused = R.drawable.notis
+    )
+
     // for report
     object Request: BottomBarScreen(
         route = "requestScreen",

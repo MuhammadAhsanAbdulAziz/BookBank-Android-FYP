@@ -3,6 +3,7 @@ package com.example.bookbank.repository
 import com.example.bookbank.api.BookApi
 import com.example.bookbank.models.BooksRequest
 import com.example.bookbank.models.LoginRequest
+import com.example.bookbank.models.RequestNewBookRequest
 import com.example.bookbank.util.Helper.handleResponse
 import com.example.bookbank.util.NetworkResult
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,9 @@ class BookRepository @Inject constructor(private val bookApi: BookApi) {
     private val _requestBooksResponse = MutableStateFlow<NetworkResult<Any>>(NetworkResult.Idle())
     val requestBooksResponse: StateFlow<NetworkResult<Any>> = _requestBooksResponse.asStateFlow()
 
+    private val _returnBooksResponse = MutableStateFlow<NetworkResult<Any>>(NetworkResult.Idle())
+    val returnBooksResponse: StateFlow<NetworkResult<Any>> = _returnBooksResponse.asStateFlow()
+
     suspend fun getAllBooks(category:String) {
         _bookResponse.value = NetworkResult.Loading()
         val response = bookApi.getAllBooks(category)
@@ -35,9 +39,23 @@ class BookRepository @Inject constructor(private val bookApi: BookApi) {
 
     }
 
+    suspend fun getReturnBooks() {
+        _returnBooksResponse.value = NetworkResult.Loading()
+        val response = bookApi.getReturnedBooks()
+        handleResponse(response, _returnBooksResponse)
+
+    }
+
     suspend fun insertBookForm(booksRequest: BooksRequest) {
         _bookFormResponse.value = NetworkResult.Loading()
         val response = bookApi.insertBookForm(booksRequest)
+        handleResponse(response,_bookFormResponse)
+
+    }
+
+    suspend fun insertRequestNewBook(requestNewBookRequest: RequestNewBookRequest) {
+        _bookFormResponse.value = NetworkResult.Loading()
+        val response = bookApi.insertRequestNewBook(requestNewBookRequest)
         handleResponse(response,_bookFormResponse)
 
     }

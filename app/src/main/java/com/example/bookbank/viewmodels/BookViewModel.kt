@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.bookbank.models.BookData
 import com.example.bookbank.models.BooksRequest
 import com.example.bookbank.models.BooksResponse
+import com.example.bookbank.models.RequestNewBookRequest
 import com.example.bookbank.repository.BookRepository
 import com.example.bookbank.util.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +26,7 @@ class BookViewModel @Inject constructor(
     val bookResponse: StateFlow<NetworkResult<Any>> = bookRepository.bookResponse
     val bookFormResponse: StateFlow<NetworkResult<Any>> = bookRepository.bookFormResponse
     val requestBooksResponse: StateFlow<NetworkResult<Any>> = bookRepository.requestBooksResponse
-
+    val returnBooksResponse: StateFlow<NetworkResult<Any>> = bookRepository.returnBooksResponse
 
     private val _books = MutableStateFlow<List<BookData>>(emptyList())
     val books: StateFlow<List<BookData>> = _books.asStateFlow()
@@ -50,9 +51,21 @@ class BookViewModel @Inject constructor(
         }
     }
 
+    fun getReturnBooks() {
+        viewModelScope.launch {
+            bookRepository.getReturnBooks()
+        }
+    }
+
     fun insertBookForm(booksRequest: BooksRequest) {
         viewModelScope.launch {
             bookRepository.insertBookForm(booksRequest)
+        }
+    }
+
+    fun insertRequestNewBook(requestNewBookRequest: RequestNewBookRequest) {
+        viewModelScope.launch {
+            bookRepository.insertRequestNewBook(requestNewBookRequest)
         }
     }
 

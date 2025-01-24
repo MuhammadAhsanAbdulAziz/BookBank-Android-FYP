@@ -50,8 +50,6 @@ import java.util.Locale
 @Composable
 fun HomeScreen(
     navController: NavController,
-    utilViewModel: UtilViewModel,
-    mainViewModel: MainViewModel,
     bookViewModel: BookViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -61,7 +59,6 @@ fun HomeScreen(
     val bookResponse by bookViewModel.bookResponse.collectAsState()
     var category by remember { mutableIntStateOf(0) }
     val books by bookViewModel.books.collectAsState()
-    val isCartDialogShowing by utilViewModel.cartDialogShowing.collectAsState()
     val gson = Gson()
 
     LaunchedEffect(category) {
@@ -107,7 +104,7 @@ fun HomeScreen(
             when (bookResponse) {
                 is NetworkResult.Loading -> {
                     CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                        modifier = Modifier.align(Alignment.CenterHorizontally), color = buttonColor
                     )
                     Log.d("Err", "HomeScreen: Loading")
                 }
@@ -144,24 +141,7 @@ fun HomeScreen(
 
 
 
-        if (isCartDialogShowing) {
-            Dialog(
-                onDismissRequest = {
 
-                }, properties = DialogProperties(
-                    dismissOnBackPress = false, usePlatformDefaultWidth = false
-                )
-            ) {
-
-                CartDetailDialog(
-                    modifier = Modifier.padding(XSmallPadding),
-                    utilViewModel = utilViewModel,
-                    mainViewModel = mainViewModel,
-                    bookViewModel = bookViewModel
-                ) // Your custom dialog content
-
-            }
-        }
 
 
     }

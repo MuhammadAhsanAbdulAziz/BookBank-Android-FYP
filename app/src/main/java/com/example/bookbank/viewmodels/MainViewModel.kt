@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bookbank.models.LoginResponse
 import com.example.bookbank.models.UserData
 import com.example.bookbank.util.DataStoreManager
 import com.example.bookbank.util.navgraph.Route

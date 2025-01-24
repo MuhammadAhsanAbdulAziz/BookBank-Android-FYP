@@ -45,7 +45,7 @@ fun RequestScreen(modifier: Modifier = Modifier, bookViewModel: BookViewModel) {
             if (selectedTab == 0) {
                 RequestBooks(bookViewModel = bookViewModel)
             } else {
-                ReturnBooks()
+                ReturnBooks(bookViewModel = bookViewModel)
             }
 
 

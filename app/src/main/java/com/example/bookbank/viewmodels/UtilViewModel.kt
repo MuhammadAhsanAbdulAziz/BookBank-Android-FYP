@@ -11,6 +11,9 @@ class UtilViewModel : ViewModel() {
     private val _cartDialogShowing = MutableStateFlow(false)
     val cartDialogShowing: StateFlow<Boolean> = _cartDialogShowing
 
+    private val _requestNewBookDialogShowing = MutableStateFlow(false)
+    val requestNewBookDialogShowing: StateFlow<Boolean> = _requestNewBookDialogShowing
+
     fun increaseCart() {
         _cartAmount.value++
     }
@@ -19,8 +22,16 @@ class UtilViewModel : ViewModel() {
         _cartAmount.value--
     }
 
+    fun emptyCart() {
+        _cartAmount.value = 0
+    }
+
     fun triggerCartDialog(value:Boolean) {
         _cartDialogShowing.value = value
+    }
+
+    fun triggerRequestNewBookDialog(value:Boolean) {
+        _requestNewBookDialogShowing.value = value
     }
 
 }

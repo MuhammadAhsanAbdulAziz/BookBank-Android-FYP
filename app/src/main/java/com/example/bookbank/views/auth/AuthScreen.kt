@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.bookbank.R
+import com.example.bookbank.models.CheckEmailRequest
 import com.example.bookbank.models.LoginRequest
 import com.example.bookbank.models.LoginResponse
 import com.example.bookbank.models.SuccessResponse
@@ -74,6 +75,7 @@ fun AuthScreen(
     var isPasswordShowing by remember { mutableStateOf(false) }
     var isLogin by remember { mutableStateOf(false) }
     val userResponse by authViewModel.userResponse.collectAsState()
+    val checkEmail by authViewModel.checkEmailResponse.collectAsState()
     var isLoading by remember { mutableStateOf(false) }
 
     LaunchedEffect(userResponse) {
@@ -103,6 +105,34 @@ fun AuthScreen(
             is NetworkResult.Error -> {
                 isLoading = false
                 Toast.makeText(context, userResponse.error.toString(), Toast.LENGTH_SHORT).show()
+            }
+
+            else -> {
+                // Handle Idle or other states
+                isLoading = false
+            }
+        }
+    }
+
+    LaunchedEffect(checkEmail) {
+        when (checkEmail) {
+            is NetworkResult.Loading -> {
+                isLoading = true
+            }
+
+            is NetworkResult.Success -> {
+                isLoading = false
+                navController.navigate(
+                    Route.SetProfileScreen.setUserData(
+                        emailText, passwordText
+                    )
+                )
+                authViewModel.resetCheckEmailState()
+            }
+
+            is NetworkResult.Error -> {
+                isLoading = false
+                Toast.makeText(context, checkEmail.error.toString(), Toast.LENGTH_SHORT).show()
             }
 
             else -> {
@@ -247,11 +277,13 @@ fun AuthScreen(
                 isLoading = true
 
                 if (!isLogin) {
-                    navController.navigate(
-                        Route.SetProfileScreen.setUserData(
-                            emailText, passwordText
-                        )
-                    )
+                    authViewModel.checkEmail(CheckEmailRequest(email = emailText))
+
+//                    navController.navigate(
+//                        Route.SetProfileScreen.setUserData(
+//                            emailText, passwordText
+//                        )
+//                    )
                 } else {
                     authViewModel.loginUser(
                         LoginRequest(
@@ -275,7 +307,7 @@ fun AuthScreen(
 
                 Spacer(Modifier.width(XSmallPadding))
 
-                Text(if(isLogin) "Sign Up" else "Sign In", style = TextStyle(
+                Text(if (isLogin) "Sign Up" else "Sign In", style = TextStyle(
                     fontSize = 17.sp, fontFamily = interRegular, color = blueColor
                 ), modifier = Modifier.clickable {
                     isLogin = !isLogin

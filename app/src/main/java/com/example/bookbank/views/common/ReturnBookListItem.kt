@@ -21,17 +21,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bookbank.models.RequestBooksData
+import com.example.bookbank.models.ReturnAndReturnBooksData
 import com.example.bookbank.ui.theme.buttonColor
+import com.example.bookbank.ui.theme.greenColor
 import com.example.bookbank.ui.theme.interBold
 import com.example.bookbank.ui.theme.interRegular
+import com.example.bookbank.ui.theme.redColor
 import com.example.bookbank.ui.theme.yellowColor
 import com.example.bookbank.util.Dimens.MediumPadding1
 
 @Composable
-fun RequestReturnBookListItem(
+fun ReturnBookListItem(
     modifier: Modifier = Modifier,
-    requestBooksData: RequestBooksData,
+    returnBooksData: ReturnAndReturnBooksData,
     onClick: (Boolean) -> Unit
 ) {
 
@@ -45,7 +47,7 @@ fun RequestReturnBookListItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(requestBooksData.form_number.toString(), style = TextStyle(
+            Text(returnBooksData.form_number.toString(), style = TextStyle(
                 fontSize = 17.sp,
                 fontFamily = interBold,
                 textDecoration = TextDecoration.Underline
@@ -57,7 +59,7 @@ fun RequestReturnBookListItem(
 
 
             Text(
-                requestBooksData.book_return_date, style = TextStyle(
+                returnBooksData.book_return_date, style = TextStyle(
                     fontSize = 17.sp, fontFamily = interRegular
                 ), textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
             )
@@ -67,14 +69,14 @@ fun RequestReturnBookListItem(
                 onClick = {
 
                 }, shape = RoundedCornerShape(7.dp), colors = ButtonDefaults.buttonColors(
-                    containerColor = yellowColor,
+                    containerColor = if (returnBooksData.request_status == "Accepted") greenColor else if (returnBooksData.request_status == "Borrowed") yellowColor else redColor,
 
                     ), modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(0.07f)
             ) {
                 Text(
-                    requestBooksData.request_status, style = TextStyle(
+                    returnBooksData.request_status, style = TextStyle(
                         fontSize = 13.sp, fontFamily = interRegular, color = buttonColor
                     )
                 )

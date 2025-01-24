@@ -136,7 +136,7 @@ fun ProfileScreen(
                             Spacer(modifier.height(XSmallPadding))
 
                             Text(
-                                userData!!.cnic, style = TextStyle(
+                                userData!!.student_cnic, style = TextStyle(
                                     fontSize = 17.sp, color = blueColor, fontFamily = interBold
                                 )
                             )
@@ -210,7 +210,7 @@ fun ProfileScreen(
 
                 }
             } else {
-                CircularProgressIndicator(color = Color.Black)
+                CircularProgressIndicator(color = buttonColor)
             }
         }
 

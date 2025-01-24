@@ -84,7 +84,6 @@ fun SetProfileScreen(
 
                 navController.popBackStack()
 
-
             }
 
             is NetworkResult.Error -> {
@@ -257,7 +256,7 @@ fun SetProfileScreen(
             Spacer(Modifier.height(MediumPadding2))
 
             CustomButton(
-                text = "Next",
+                text = "Register",
                 color = buttonColor,
                 textSize = 17,
                 textColor = Color.White,

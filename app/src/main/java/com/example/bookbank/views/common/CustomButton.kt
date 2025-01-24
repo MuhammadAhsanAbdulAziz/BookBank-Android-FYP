@@ -11,6 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bookbank.ui.theme.buttonColor
 import com.example.bookbank.ui.theme.interRegular
 
 @Composable
@@ -39,7 +40,7 @@ fun CustomButton(
         ) {
             if (isLoading) {
                 CircularProgressIndicator(
-                    color = textColor,
+                    color = buttonColor,
                     strokeWidth = 2.dp,
                     modifier = Modifier.size(24.dp)
                 )

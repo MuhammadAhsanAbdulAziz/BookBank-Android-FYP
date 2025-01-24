@@ -1,5 +1,6 @@
 package com.example.bookbank.views.profile.common
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -27,11 +28,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -39,8 +42,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.bookbank.R
+import com.example.bookbank.models.UpdateStudentRequest
+import com.example.bookbank.models.UpdateStudentResponse
+import com.example.bookbank.models.UserData
 import com.example.bookbank.ui.theme.appColor
 import com.example.bookbank.ui.theme.buttonColor
 import com.example.bookbank.ui.theme.interBold
@@ -48,18 +55,26 @@ import com.example.bookbank.ui.theme.interRegular
 import com.example.bookbank.util.Dimens.MediumPadding1
 import com.example.bookbank.util.Dimens.XSmallPadding
 import com.example.bookbank.util.Dimens.XXSmallPadding
+import com.example.bookbank.util.NetworkResult
 import com.example.bookbank.viewmodels.MainViewModel
+import com.example.bookbank.viewmodels.StudentViewModel
 import com.example.bookbank.views.common.CustomButton
 import com.example.bookbank.views.common.CustomTextField
 
 @Composable
-fun UpdateProfile(navController: NavController, mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
+fun UpdateProfile(navController: NavController, mainViewModel: MainViewModel, studentViewModel: StudentViewModel = hiltViewModel(), modifier: Modifier = Modifier) {
 
     val userData by mainViewModel.readUserData().collectAsState(initial = null)
 
     val nameText = remember { mutableStateOf("") }
     val fNameText = remember { mutableStateOf("") }
     val addressText = remember { mutableStateOf("") }
+    val nameError = remember { mutableStateOf("") }
+    val fNameError = remember { mutableStateOf("") }
+    val addressError = remember { mutableStateOf("") }
+    val userResponse =  studentViewModel.userResponse.collectAsState()
+    var isLoading by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     LaunchedEffect(userData) {
         userData?.let {
@@ -69,6 +84,34 @@ fun UpdateProfile(navController: NavController, mainViewModel: MainViewModel, mo
         }
     }
 
+    LaunchedEffect(userResponse.value) {
+        when (userResponse.value) {
+            is NetworkResult.Loading -> {
+                isLoading = true
+            }
+
+            is NetworkResult.Success -> {
+                val data = userResponse.value.data as UpdateStudentResponse
+
+                mainViewModel.saveUserData(data.updatedData)
+
+                isLoading = false
+                Toast.makeText(context, "Profile Successfully updated", Toast.LENGTH_SHORT).show()
+                navController.popBackStack()
+            }
+
+            is NetworkResult.Error -> {
+                isLoading = false
+                Toast.makeText(context, userResponse.value.error.toString(), Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+            else -> {
+                // Handle Idle or other states
+                isLoading = false
+            }
+        }
+    }
 
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -146,6 +189,7 @@ fun UpdateProfile(navController: NavController, mainViewModel: MainViewModel, mo
                     borderColor = Color.Black,
                     textColor = Color.Black,
                     textValue = nameText.value,
+                    error = nameError.value,
                     borderRad = 5,
                     keyboardType = KeyboardType.Text,
                 ) {
@@ -167,6 +211,7 @@ fun UpdateProfile(navController: NavController, mainViewModel: MainViewModel, mo
                     text = fNameText.value,
                     bgColor = Color.White,
                     borderColor = Color.Black,
+                    error = fNameError.value,
                     textColor = Color.Black,
                     textValue = fNameText.value,
                     borderRad = 5,
@@ -190,6 +235,7 @@ fun UpdateProfile(navController: NavController, mainViewModel: MainViewModel, mo
                     text = addressText.value,
                     bgColor = Color.White,
                     borderColor = Color.Black,
+                    error = addressError.value,
                     textColor = Color.Black,
                     textValue = addressText.value,
                     borderRad = 5,
@@ -209,12 +255,29 @@ fun UpdateProfile(navController: NavController, mainViewModel: MainViewModel, mo
                         color = buttonColor,
                         textSize = 16,
                         textColor = Color.White,
-                        isLoading = false,
+                        isLoading = isLoading,
                         radius = 7,
                         height = 50,
                         modifier = Modifier.fillMaxWidth(.5f)
                     ) {
-
+                        if(nameText.value.isEmpty()){
+                            nameError.value = "Please enter name"
+                            return@CustomButton
+                        }
+                        if(fNameText.value.isEmpty()){
+                            fNameError.value = "Please enter father's name"
+                            return@CustomButton
+                        }
+                        if(addressText.value.isEmpty()){
+                            addressError.value = "Please enter address"
+                            return@CustomButton
+                        }
+                        isLoading = true
+                        studentViewModel.updateStudent(UpdateStudentRequest(
+                            name = nameText.value,
+                            father_name = fNameText.value,
+                            address = addressText.value
+                        ))
                     }
 
 

@@ -2,6 +2,7 @@ package com.example.bookbank.di
 
 import com.example.bookbank.api.AuthApi
 import com.example.bookbank.api.BookApi
+import com.example.bookbank.api.StudentApi
 import com.example.bookbank.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -40,10 +41,22 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideBooksApi(retrofitBuilder: Retrofit.Builder,okHttpClient: OkHttpClient): BookApi {
+    fun provideBooksApi(retrofitBuilder: Retrofit.Builder, okHttpClient: OkHttpClient): BookApi {
         return retrofitBuilder
             .client(okHttpClient)
             .build()
             .create(BookApi::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideStudentApi(
+        retrofitBuilder: Retrofit.Builder,
+        okHttpClient: OkHttpClient
+    ): StudentApi {
+        return retrofitBuilder
+            .client(okHttpClient)
+            .build()
+            .create(StudentApi::class.java)
     }
 }

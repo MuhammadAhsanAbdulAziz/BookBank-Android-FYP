@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.bookbank.models.LoginResponse
 import com.example.bookbank.models.UserData
 import com.example.bookbank.util.Constants.APP_ENTRY
 import com.example.bookbank.util.Constants.MY_PREFERENCES

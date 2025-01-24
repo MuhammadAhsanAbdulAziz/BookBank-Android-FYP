@@ -28,10 +28,11 @@ import com.example.bookbank.ui.theme.textColor
 import com.example.bookbank.util.Dimens.MediumPadding1
 import com.example.bookbank.util.Dimens.MediumPadding3
 import com.example.bookbank.util.Dimens.PageIndicatorWidth
+import com.example.bookbank.viewmodels.UtilViewModel
 import com.example.bookbank.views.common.CustomButton
 
 @Composable
-fun DonateBooks(modifier: Modifier = Modifier) {
+fun DonateBooks(modifier: Modifier = Modifier,utilViewModel: UtilViewModel) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
@@ -46,7 +47,7 @@ fun DonateBooks(modifier: Modifier = Modifier) {
         )
 
         Text(
-            "Donate Books to us", style = TextStyle(
+            "Request new books", style = TextStyle(
                 fontSize = 24.sp, fontFamily = interBold, color = textColor
             )
         )
@@ -62,7 +63,9 @@ fun DonateBooks(modifier: Modifier = Modifier) {
             radius = 6,
             height = 50,
             modifier = Modifier.width(200.dp)
-        ) { }
+        ) {
+            utilViewModel.triggerRequestNewBookDialog(true)
+        }
 
     }
 

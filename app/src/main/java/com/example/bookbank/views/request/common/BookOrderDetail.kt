@@ -27,16 +27,20 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bookbank.models.BookData
+import com.example.bookbank.models.ReturnAndReturnBooksData
 import com.example.bookbank.ui.theme.buttonColor
+import com.example.bookbank.ui.theme.greenColor
 import com.example.bookbank.ui.theme.interBold
 import com.example.bookbank.ui.theme.interRegular
 import com.example.bookbank.ui.theme.lightYellowColor
+import com.example.bookbank.ui.theme.redColor
 import com.example.bookbank.ui.theme.yellowColor
 import com.example.bookbank.util.Dimens.MediumPadding1
 import com.example.bookbank.util.Dimens.SmallPadding
 
 @Composable
-fun BookOrderDetail(modifier: Modifier = Modifier,onClose : () -> Unit) {
+fun BookOrderDetail(modifier: Modifier = Modifier, formData: ReturnAndReturnBooksData, onClose : () -> Unit) {
 
     ElevatedCard(
         elevation = CardDefaults.elevatedCardElevation(10.dp),
@@ -55,7 +59,7 @@ fun BookOrderDetail(modifier: Modifier = Modifier,onClose : () -> Unit) {
                 Spacer(Modifier.weight(1f))
 
                 Text(
-                    "Book ID ${"134"}", style = TextStyle(
+                    "Book ID ${formData.form_number}", style = TextStyle(
                         fontSize = 18.sp, fontFamily = interBold
                     ), textAlign = TextAlign.Center
                 )
@@ -76,8 +80,8 @@ fun BookOrderDetail(modifier: Modifier = Modifier,onClose : () -> Unit) {
             Spacer(Modifier.height(SmallPadding))
 
             LazyColumn(modifier = Modifier.fillMaxHeight(0.7f)) {
-                items(4){
-//                    BookOrderDetailListItem()
+                items(formData.books_details.size){index ->
+                    BookOrderDetailListItem(bookData = formData.books_details[index])
                 }
             }
 
@@ -94,7 +98,7 @@ fun BookOrderDetail(modifier: Modifier = Modifier,onClose : () -> Unit) {
                     Spacer(Modifier.weight(1f))
 
                     Text(
-                        "12-Dec-2024", style = TextStyle(
+                        formData.book_return_date, style = TextStyle(
                             fontSize = 20.sp, fontFamily = interRegular
                         ), textAlign = TextAlign.Center
                     )
@@ -107,12 +111,12 @@ fun BookOrderDetail(modifier: Modifier = Modifier,onClose : () -> Unit) {
                 onClick = {
 
                 }, shape = RoundedCornerShape(7.dp), colors = ButtonDefaults.buttonColors(
-                    containerColor = yellowColor
+                    containerColor = if (formData.request_status == "Accepted") greenColor else if (formData.request_status == "Borrowed") yellowColor else redColor,
 
                     ),modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 Text(
-                    "Borrowed", style = TextStyle(
+                    formData.request_status, style = TextStyle(
                         fontSize = 13.sp, fontFamily = interRegular, color = buttonColor
                     )
                 )

@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Book Bank"
 include(":app")
+include(":benchmark")

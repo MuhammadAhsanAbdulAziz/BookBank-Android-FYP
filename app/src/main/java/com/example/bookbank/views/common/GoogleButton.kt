@@ -56,7 +56,7 @@ fun GoogleButton(
         ) {
             if (isLoading) {
                 CircularProgressIndicator(
-                    color = textColor, strokeWidth = 2.dp, modifier = Modifier.size(24.dp)
+                    color = buttonColor, strokeWidth = 2.dp, modifier = Modifier.size(24.dp)
                 )
             } else {
                 Row(verticalAlignment = Alignment.CenterVertically) {

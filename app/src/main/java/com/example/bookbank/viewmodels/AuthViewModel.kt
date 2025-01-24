@@ -3,6 +3,7 @@ package com.example.bookbank.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.bookbank.models.CheckEmailRequest
 import com.example.bookbank.models.LoginRequest
 import com.example.bookbank.models.RegisterRequest
 import com.example.bookbank.repository.AuthRepository
@@ -19,6 +20,7 @@ class AuthViewModel @Inject constructor(
 
     // Exposing the StateFlow to the UI, not allowing modification outside
     val userResponse: StateFlow<NetworkResult<Any>> = authRepository.userResponse
+    val checkEmailResponse: StateFlow<NetworkResult<Any>> = authRepository.checkEmailResponse
 
     fun loginUser(loginRequest: LoginRequest) {
         viewModelScope.launch {
@@ -32,4 +34,17 @@ class AuthViewModel @Inject constructor(
             authRepository.registerUser(registerRequest)
         }
     }
+
+    fun checkEmail(checkEmailRequest: CheckEmailRequest) {
+        viewModelScope.launch {
+            authRepository.checkEmail(checkEmailRequest)
+        }
+    }
+
+    fun resetCheckEmailState() {
+        authRepository.resetCheckEmailState()
+    }
+
+
+
 }
