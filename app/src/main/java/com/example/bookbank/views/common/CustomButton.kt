@@ -40,7 +40,7 @@ fun CustomButton(
         ) {
             if (isLoading) {
                 CircularProgressIndicator(
-                    color = buttonColor,
+                    color = Color.White,
                     strokeWidth = 2.dp,
                     modifier = Modifier.size(24.dp)
                 )

@@ -6,6 +6,7 @@ import com.example.bookbank.models.LoginRequest
 import com.example.bookbank.models.RequestBooksResponse
 import com.example.bookbank.models.RequestNewBookRequest
 import com.example.bookbank.models.ReturnBooksResponse
+import com.example.bookbank.models.SearchBookResponse
 import com.example.bookbank.models.SuccessResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -32,4 +33,8 @@ interface BookApi {
     @POST("database/requestBooks/insert")
     suspend fun insertRequestNewBook(@Body requestNewBookRequest: RequestNewBookRequest): Response<SuccessResponse>
 
+    @GET("database/books/search")
+    suspend fun searchBooks(
+        @Query("query") query: String
+    ): Response<SearchBookResponse>
 }

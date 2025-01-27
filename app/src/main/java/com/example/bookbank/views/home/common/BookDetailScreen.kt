@@ -1,18 +1,15 @@
 package com.example.bookbank.views.home.common
 
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -22,38 +19,27 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
-import com.example.bookbank.R
 import com.example.bookbank.models.BookData
 import com.example.bookbank.ui.theme.buttonColor
 import com.example.bookbank.ui.theme.interBold
 import com.example.bookbank.ui.theme.interRegular
 import com.example.bookbank.util.Dimens.MediumPadding1
-import com.example.bookbank.util.Dimens.SmallPadding
+import com.example.bookbank.util.Dimens.XXSmallPadding
 import com.example.bookbank.viewmodels.BookViewModel
 import com.example.bookbank.viewmodels.UtilViewModel
 import com.example.bookbank.views.common.CustomButton
-import com.example.bookbank.views.common.CustomTextField
-import com.google.gson.Gson
+import com.example.bookbank.views.common.SearchBooksScreen
 
 @Composable
 fun BookDetailScreen(
@@ -64,8 +50,7 @@ fun BookDetailScreen(
     book: BookData
 ) {
 
-    var searchText by remember { mutableStateOf("") }
-    var context = LocalContext.current
+    val context = LocalContext.current
 
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -77,25 +62,7 @@ fun BookDetailScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            CustomTextField(
-                modifier = Modifier.height(50.dp),
-                text = "Search",
-                bgColor = Color.White,
-                borderColor = buttonColor,
-                textColor = buttonColor,
-                textValue = searchText,
-                borderRad = 40,
-                keyboardType = KeyboardType.Text,
-                leadingIcon = {
-                    Image(
-                        painter = painterResource(R.drawable.search_24px),
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(buttonColor)
-                    )
-                },
-            ) {
-                searchText = it
-            }
+            SearchBooksScreen(viewModel = bookViewModel, navController = navController)
 
             Spacer(Modifier.height(MediumPadding1))
 
@@ -145,46 +112,93 @@ fun BookDetailScreen(
                         ), modifier = Modifier.align(Alignment.Start)
                     )
 
-                    Spacer(Modifier.height(SmallPadding))
+                    Spacer(Modifier.height(MediumPadding1))
 
-                    Text(
-                        "Description", style = TextStyle(
-                            fontSize = 14.sp, color = buttonColor, fontFamily = interBold
-                        ), modifier = Modifier.align(Alignment.Start)
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
 
-                    Spacer(Modifier.height(SmallPadding))
-
-                    LazyColumn(modifier = Modifier.fillMaxHeight(0.7f)) {
-                        item {
-                            Text(
-                                "The English IX textbook for the Sindh Board  is designed to align with the educational curriculum set by the Board of Secondary Education, Sindh. This textbook is intended to enhance their English language skills in reading, writing, speaking, and comprehension English language skills in reading, writing, speaking, and comprehension",
-                                style = TextStyle(
-                                    fontSize = 14.sp, color = buttonColor, fontFamily = interRegular
-                                ),
-                                modifier = Modifier.align(Alignment.Start)
+                        Text(
+                            "Category:", style = TextStyle(
+                                fontSize = 18.sp, color = buttonColor, fontFamily = interBold
                             )
-                        }
+                        )
+
+                        Spacer(Modifier.width(XXSmallPadding))
+
+                        Text(
+                            book.category, style = TextStyle(
+                                fontSize = 18.sp, color = buttonColor, fontFamily = interRegular
+                            )
+                        )
+
                     }
 
-                    Spacer(Modifier.height(SmallPadding))
+                    Spacer(Modifier.height(MediumPadding1))
 
-                    CustomButton(
-                        text = "Add Book",
-                        color = buttonColor,
-                        textSize = 15,
-                        textColor = Color.White,
-                        isLoading = false,
-                        radius = 6,
-                        height = 40,
-                        modifier = Modifier
-                            .fillMaxWidth(0.6f)
-                            .align(Alignment.CenterHorizontally)
-                    ) {
-                        val res = bookViewModel.insertBooksForOrder(book,context)
-                        if(res) {
-                            utilViewModel.increaseCart()
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+
+                        Text(
+                            "Available Copies:", style = TextStyle(
+                                fontSize = 18.sp, color = buttonColor, fontFamily = interBold
+                            )
+                        )
+
+                        Spacer(Modifier.width(XXSmallPadding))
+
+                        Text(
+                            "${book.availableCopies} left", style = TextStyle(
+                                fontSize = 18.sp, color = buttonColor, fontFamily = interRegular
+                            )
+                        )
+
+                    }
+
+                    Spacer(Modifier.height(MediumPadding1))
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+
+                        Text(
+                            "Price:", style = TextStyle(
+                                fontSize = 18.sp, color = buttonColor, fontFamily = interBold
+                            )
+                        )
+
+                        Spacer(Modifier.width(XXSmallPadding))
+
+                        Text(
+                            "${book.price} rs", style = TextStyle(
+                                fontSize = 18.sp, color = buttonColor, fontFamily = interRegular
+                            )
+                        )
+
+                    }
+
+
+
+                    Spacer(Modifier.weight(1f))
+
+                    Row {
+                        Spacer(Modifier.weight(1f))
+
+                        CustomButton(
+                            text = "Add Book",
+                            color = if (book.availableCopies == 0) buttonColor.copy(0.5f) else buttonColor,
+                            textSize = 15,
+                            textColor = Color.White,
+                            isLoading = false,
+                            radius = 6,
+                            height = 40,
+                            modifier = Modifier
+                                .fillMaxWidth(0.6f)
+                        ) {
+                            if (book.availableCopies != 0) {
+                                val res = bookViewModel.insertBooksForOrder(book, context)
+                                if (res) {
+                                    utilViewModel.increaseCart()
+                                }
+                            }
                         }
+
+                        Spacer(Modifier.weight(1f))
                     }
 
                 }

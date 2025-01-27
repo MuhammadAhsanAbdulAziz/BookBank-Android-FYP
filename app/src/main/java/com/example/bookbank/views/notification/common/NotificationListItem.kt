@@ -22,8 +22,10 @@ import com.example.bookbank.models.Notification
 import com.example.bookbank.ui.theme.buttonColor
 import com.example.bookbank.ui.theme.interBold
 import com.example.bookbank.ui.theme.interRegular
+import com.example.bookbank.ui.theme.redColor
 import com.example.bookbank.util.Dimens.SmallPadding
 import com.example.bookbank.util.Dimens.XSmallPadding
+import com.example.bookbank.util.Helper.getTimeAgo
 
 @Composable
 fun NotificationListItem(notification: Notification, modifier: Modifier = Modifier) {
@@ -32,7 +34,8 @@ fun NotificationListItem(notification: Notification, modifier: Modifier = Modifi
             .padding(vertical = XSmallPadding)
             .shadow(elevation = 20.dp)
             .background(
-                color = Color.White, shape = RoundedCornerShape(8.dp)
+                color = if (notification.messages.severity == "normal") Color.White else redColor,
+                shape = RoundedCornerShape(8.dp)
             )
             .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
 
@@ -52,7 +55,7 @@ fun NotificationListItem(notification: Notification, modifier: Modifier = Modifi
                 Spacer(Modifier.weight(1f))
 
                 Text(
-                    "1 hour ago", style = TextStyle(
+                    getTimeAgo(notification.updated_at), style = TextStyle(
                         fontSize = 15.sp,
                         color = buttonColor,
                         fontFamily = interRegular,

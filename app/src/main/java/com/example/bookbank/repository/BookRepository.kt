@@ -2,7 +2,6 @@ package com.example.bookbank.repository
 
 import com.example.bookbank.api.BookApi
 import com.example.bookbank.models.BooksRequest
-import com.example.bookbank.models.LoginRequest
 import com.example.bookbank.models.RequestNewBookRequest
 import com.example.bookbank.util.Helper.handleResponse
 import com.example.bookbank.util.NetworkResult
@@ -25,10 +24,20 @@ class BookRepository @Inject constructor(private val bookApi: BookApi) {
     private val _returnBooksResponse = MutableStateFlow<NetworkResult<Any>>(NetworkResult.Idle())
     val returnBooksResponse: StateFlow<NetworkResult<Any>> = _returnBooksResponse.asStateFlow()
 
-    suspend fun getAllBooks(category:String) {
+    private val _searchBooksResponse = MutableStateFlow<NetworkResult<Any>>(NetworkResult.Idle())
+    val searchBooksResponse: StateFlow<NetworkResult<Any>> = _searchBooksResponse.asStateFlow()
+
+    suspend fun getAllBooks(category: String) {
         _bookResponse.value = NetworkResult.Loading()
         val response = bookApi.getAllBooks(category)
         handleResponse(response, _bookResponse)
+
+    }
+
+    suspend fun searchBooks(query: String) {
+        _searchBooksResponse.value = NetworkResult.Loading()
+        val response = bookApi.searchBooks(query)
+        handleResponse(response, _searchBooksResponse)
 
     }
 
@@ -49,14 +58,14 @@ class BookRepository @Inject constructor(private val bookApi: BookApi) {
     suspend fun insertBookForm(booksRequest: BooksRequest) {
         _bookFormResponse.value = NetworkResult.Loading()
         val response = bookApi.insertBookForm(booksRequest)
-        handleResponse(response,_bookFormResponse)
+        handleResponse(response, _bookFormResponse)
 
     }
 
     suspend fun insertRequestNewBook(requestNewBookRequest: RequestNewBookRequest) {
         _bookFormResponse.value = NetworkResult.Loading()
         val response = bookApi.insertRequestNewBook(requestNewBookRequest)
-        handleResponse(response,_bookFormResponse)
+        handleResponse(response, _bookFormResponse)
 
     }
 }

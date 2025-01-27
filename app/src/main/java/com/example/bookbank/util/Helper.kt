@@ -13,7 +13,10 @@ import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Response
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 object Helper {
@@ -112,6 +115,57 @@ object Helper {
             }
         } else {
             responseData.value = NetworkResult.Error("Unknown network error occurred")
+        }
+    }
+
+    fun getTimeAgo(dateTime: String): String {
+        // Parse the given datetime string
+        val formatter = DateTimeFormatter.ISO_DATE_TIME
+        val currentDateTime = LocalDateTime.now(ZoneOffset.UTC)
+        val parsedDateTime = LocalDateTime.parse(dateTime, formatter)
+
+        // Calculate the difference in seconds
+        val durationInSeconds = ChronoUnit.SECONDS.between(parsedDateTime, currentDateTime)
+
+        return when {
+            // If time is less than a minute ago
+            durationInSeconds < 60 -> "${durationInSeconds}s ago"
+
+            // If time is less than an hour ago
+            durationInSeconds < 3600 -> {
+                val minutes = durationInSeconds / 60
+                "${minutes}m ago"
+            }
+
+            // If time is less than a day ago
+            durationInSeconds < 86400 -> {
+                val hours = durationInSeconds / 3600
+                "${hours}h ago"
+            }
+
+            // If time is less than a week ago
+            durationInSeconds < 604800 -> {
+                val days = durationInSeconds / 86400
+                "${days}d ago"
+            }
+
+            // If time is less than a month ago
+            durationInSeconds < 2592000 -> {
+                val weeks = durationInSeconds / 604800
+                "${weeks}w ago"
+            }
+
+            // If time is less than a year ago
+            durationInSeconds < 31536000 -> {
+                val months = durationInSeconds / 2592000
+                "${months}mo ago"
+            }
+
+            // If time is more than a year ago
+            else -> {
+                val years = durationInSeconds / 31536000
+                "${years}y ago"
+            }
         }
     }
 

@@ -29,9 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -45,15 +43,12 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.bookbank.R
 import com.example.bookbank.models.BottomBarScreen
 import com.example.bookbank.ui.theme.appColor
 import com.example.bookbank.ui.theme.buttonColor
 import com.example.bookbank.ui.theme.interBold
-import com.example.bookbank.util.Dimens.MediumPadding1
 import com.example.bookbank.util.Dimens.XSmallPadding
 import com.example.bookbank.util.navgraph.MainNavGraph
-import com.example.bookbank.util.navgraph.Route
 import com.example.bookbank.viewmodels.BookViewModel
 import com.example.bookbank.viewmodels.MainViewModel
 import com.example.bookbank.viewmodels.UtilViewModel
@@ -91,27 +86,15 @@ fun MainScreen(
             }
         }) {
         Column(
-            modifier = when (currentDestination?.route) {
-                Route.ProfileScreen.route -> Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-                    .padding(it)
-
-                else -> Modifier
-                    .fillMaxSize()
-                    .paint(
-                        // Replace with your image id
-                        painterResource(id = R.drawable.bg), contentScale = ContentScale.FillBounds
-                    )
-                    .padding(it)
-            },
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(it),
 
 
             ) {
             MainNavGraph(
-                navController = navController,
-                utilViewModel,
-                bookViewModel = bookViewModel
+                navController = navController, utilViewModel, bookViewModel = bookViewModel
             )
 
         }
@@ -147,8 +130,7 @@ fun MainScreen(
             ) {
 
                 RequestNewBookDialog(
-                    modifier = Modifier.padding(XSmallPadding),
-                    bookViewModel = bookViewModel
+                    modifier = Modifier.padding(XSmallPadding), bookViewModel = bookViewModel
                 ) {
                     utilViewModel.triggerRequestNewBookDialog(false)
                 }

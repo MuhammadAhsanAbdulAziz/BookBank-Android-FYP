@@ -25,7 +25,7 @@ class StudentRepository @Inject constructor(private val studentApi: StudentApi) 
     }
 
     suspend fun getNotifications() {
-        _userResponse.value = NetworkResult.Loading()
+        _notificationResponse.value = NetworkResult.Loading()
         val response = studentApi.getNotifications()
         handleResponse(response, _notificationResponse)
 

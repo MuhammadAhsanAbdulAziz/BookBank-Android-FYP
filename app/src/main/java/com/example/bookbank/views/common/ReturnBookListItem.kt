@@ -29,6 +29,7 @@ import com.example.bookbank.ui.theme.interRegular
 import com.example.bookbank.ui.theme.redColor
 import com.example.bookbank.ui.theme.yellowColor
 import com.example.bookbank.util.Dimens.MediumPadding1
+import java.util.Locale
 
 @Composable
 fun ReturnBookListItem(
@@ -69,14 +70,18 @@ fun ReturnBookListItem(
                 onClick = {
 
                 }, shape = RoundedCornerShape(7.dp), colors = ButtonDefaults.buttonColors(
-                    containerColor = if (returnBooksData.request_status == "Accepted") greenColor else if (returnBooksData.request_status == "Borrowed") yellowColor else redColor,
+                    containerColor = when (returnBooksData.borrowed_status.lowercase(Locale.ROOT)) {
+                        "returned" -> greenColor
+                        "borrowed" -> yellowColor
+                        else -> redColor
+                    },
 
                     ), modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(0.07f)
             ) {
                 Text(
-                    returnBooksData.request_status, style = TextStyle(
+                    returnBooksData.borrowed_status, style = TextStyle(
                         fontSize = 13.sp, fontFamily = interRegular, color = buttonColor
                     )
                 )

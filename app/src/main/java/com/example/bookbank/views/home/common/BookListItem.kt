@@ -49,7 +49,7 @@ fun BookListItem(book: BookData, modifier: Modifier = Modifier, onClick: () -> U
 
         Text(
             book.author, style = TextStyle(
-                fontSize = 15.sp, fontFamily = interRegular
+                fontSize = 13.sp, fontFamily = interRegular
             ), modifier = Modifier.align(Alignment.Start)
         )
 

@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.IconButton
@@ -19,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -43,9 +48,11 @@ import com.example.bookbank.util.Dimens.SmallPadding
 import com.example.bookbank.util.Helper.isValidCNIC
 import com.example.bookbank.util.Helper.isValidPhoneNumber
 import com.example.bookbank.util.NetworkResult
+import com.example.bookbank.util.customOverscroll
 import com.example.bookbank.viewmodels.AuthViewModel
 import com.example.bookbank.views.common.CustomButton
 import com.example.bookbank.views.common.CustomTextField
+import kotlin.math.roundToInt
 
 @Composable
 fun SetProfileScreen(
@@ -69,9 +76,10 @@ fun SetProfileScreen(
     val userResponse by authViewModel.userResponse.collectAsState()
     var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
-
     val phoneMaxLength = 10
     val cnicMaxLength = 13
+    val listState = rememberLazyListState()
+    var animatedOverscrollAmount by remember { mutableFloatStateOf(0f) }
 
     LaunchedEffect(userResponse) {
         when (userResponse) {
@@ -81,7 +89,7 @@ fun SetProfileScreen(
 
             is NetworkResult.Success -> {
                 isLoading = false
-
+                Toast.makeText(context, "Account created successfully", Toast.LENGTH_SHORT).show()
                 navController.popBackStack()
 
             }
@@ -105,209 +113,231 @@ fun SetProfileScreen(
             .padding(MediumPadding1)
 
     ) {
-        Column(
+        LazyColumn(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .customOverscroll(
+                    listState,
+                    onNewOverscrollAmount = { animatedOverscrollAmount = it }
+                )
+                .offset { IntOffset(0, animatedOverscrollAmount.roundToInt()) },
+
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            item{
+                Row(verticalAlignment = Alignment.CenterVertically) {
 
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }) {
-                    Image(
-                        painter = painterResource(R.drawable.baseline_arrow_back_ios_24),
-                        contentDescription = null
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                    }) {
+                        Image(
+                            painter = painterResource(R.drawable.baseline_arrow_back_ios_24),
+                            contentDescription = null
+                        )
+                    }
+
+                    Spacer(Modifier.weight(1f))
+
+                    Text(
+                        "Set Profile", style = TextStyle(
+                            fontSize = 25.sp, fontFamily = interBold
+                        )
                     )
+
+                    Spacer(Modifier.weight(1f))
                 }
 
-                Spacer(Modifier.weight(1f))
+                Spacer(Modifier.height(SmallPadding))
 
-                Text(
-                    "Set Profile", style = TextStyle(
-                        fontSize = 25.sp, fontFamily = interBold
+                Row {
+                    Text(
+                        "Name", style = TextStyle(
+                            fontSize = 20.sp, fontFamily = interRegular
+                        )
                     )
-                )
-
-                Spacer(Modifier.weight(1f))
-            }
-
-            Spacer(Modifier.height(SmallPadding))
-
-            Text(
-                "Name", style = TextStyle(
-                    fontSize = 20.sp, fontFamily = interRegular
-                ), modifier = Modifier.align(Alignment.Start)
-            )
-
-            Spacer(Modifier.height(SmallPadding))
-
-            CustomTextField(modifier = Modifier,
-                text = "Enter your Name",
-                bgColor = Color.White,
-                borderColor = buttonColor,
-                textColor = buttonColor,
-                textValue = nameText,
-                borderRad = 5,
-                isPasswordField = false,
-                error = nameError,
-                keyboardType = KeyboardType.Text,
-                onValueChange = {
-                    nameText = it
-                })
-
-            Spacer(Modifier.height(MediumPadding2))
-
-            Text(
-                "Father's Name", style = TextStyle(
-                    fontSize = 20.sp, fontFamily = interRegular
-                ), modifier = Modifier.align(Alignment.Start)
-            )
-
-            Spacer(Modifier.height(SmallPadding))
-
-            CustomTextField(modifier = Modifier,
-                text = "Enter your father's name",
-                bgColor = Color.White,
-                borderColor = buttonColor,
-                textColor = buttonColor,
-                textValue = fNameText,
-                borderRad = 5,
-                keyboardType = KeyboardType.Text,
-                error = fNameError,
-                onValueChange = {
-                    fNameText = it
-                })
-
-            Spacer(Modifier.height(MediumPadding2))
-
-            Text(
-                "Address", style = TextStyle(
-                    fontSize = 20.sp, fontFamily = interRegular
-                ), modifier = Modifier.align(Alignment.Start)
-            )
-
-            Spacer(Modifier.height(SmallPadding))
-
-            CustomTextField(modifier = Modifier,
-                text = "Enter your address",
-                bgColor = Color.White,
-                borderColor = buttonColor,
-                textColor = buttonColor,
-                textValue = addressText,
-                borderRad = 5,
-                keyboardType = KeyboardType.Text,
-                error = addressError,
-
-                onValueChange = {
-                    addressText = it
-                })
-
-            Spacer(Modifier.height(MediumPadding2))
-
-            Text(
-                "Phone No", style = TextStyle(
-                    fontSize = 20.sp, fontFamily = interRegular
-                ), modifier = Modifier.align(Alignment.Start)
-            )
-
-            Spacer(Modifier.height(SmallPadding))
-
-            CustomTextField(modifier = Modifier,
-                text = "",
-                bgColor = Color.White,
-                borderColor = buttonColor,
-                textColor = buttonColor,
-                prefixText = "+92",
-                textValue = phoneText,
-                borderRad = 5,
-                keyboardType = KeyboardType.Phone,
-                error = phoneError,
-                onValueChange = {
-                    if (it.length <= phoneMaxLength) phoneText = it
-                })
-
-            Spacer(Modifier.height(MediumPadding2))
-
-            Text(
-                "CNIC", style = TextStyle(
-                    fontSize = 20.sp, fontFamily = interRegular
-                ), modifier = Modifier.align(Alignment.Start)
-            )
-
-            Spacer(Modifier.height(SmallPadding))
-
-            CustomTextField(modifier = Modifier,
-                text = "Enter your CNIC",
-                bgColor = Color.White,
-                borderColor = buttonColor,
-                textColor = buttonColor,
-                textValue = cnicText,
-                borderRad = 5,
-                keyboardType = KeyboardType.Number,
-                error = cnicError,
-
-                onValueChange = {
-                    if (it.length <= cnicMaxLength) cnicText = it
-                })
-
-            Spacer(Modifier.height(MediumPadding2))
-
-            CustomButton(
-                text = "Register",
-                color = buttonColor,
-                textSize = 17,
-                textColor = Color.White,
-                isLoading = isLoading,
-                radius = 8,
-                height = 70,
-                modifier = Modifier
-            ) {
-                nameError = null
-                fNameError = null
-                addressError = null
-                phoneError = null
-                cnicError = null
-
-                if (nameText.isEmpty()) {
-                    nameError = "Please enter your name"
-                    return@CustomButton
-                }
-                if (fNameText.isEmpty()) {
-                    fNameError = "Please enter your father's name"
-                    return@CustomButton
-                }
-                if (addressText.isEmpty()) {
-                    addressError = "Please enter your address"
-                    return@CustomButton
-                }
-                val numError = isValidPhoneNumber(phoneText)
-                if (!numError.isNullOrEmpty()) {
-                    phoneError = numError
-                    return@CustomButton
-                }
-                val cNICError = isValidCNIC(cnicText)
-                if (!cNICError.isNullOrEmpty()) {
-                    cnicError = cNICError
-                    return@CustomButton
+                    Spacer(Modifier.weight(1f))
                 }
 
-                isLoading = true
+                Spacer(Modifier.height(SmallPadding))
 
-                authViewModel.registerUser(
-                    RegisterRequest(
-                        address = addressText,
-                        cnic = cnicText,
-                        email = email!!,
-                        father_name = fNameText,
-                        mobile = "+92$phoneText",
-                        name = nameText,
-                        password = password!!
+                CustomTextField(modifier = Modifier,
+                    text = "Enter your Name",
+                    bgColor = Color.White,
+                    borderColor = buttonColor,
+                    textColor = buttonColor,
+                    textValue = nameText,
+                    borderRad = 5,
+                    isPasswordField = false,
+                    error = nameError,
+                    keyboardType = KeyboardType.Text,
+                    onValueChange = {
+                        nameText = it
+                    })
+
+                Spacer(Modifier.height(MediumPadding2))
+
+                Row {
+                    Text(
+                        "Father's Name", style = TextStyle(
+                            fontSize = 20.sp, fontFamily = interRegular
+                        )
                     )
-                )
+                    Spacer(Modifier.weight(1f))
+                }
 
+                Spacer(Modifier.height(SmallPadding))
+
+                CustomTextField(modifier = Modifier,
+                    text = "Enter your father's name",
+                    bgColor = Color.White,
+                    borderColor = buttonColor,
+                    textColor = buttonColor,
+                    textValue = fNameText,
+                    borderRad = 5,
+                    keyboardType = KeyboardType.Text,
+                    error = fNameError,
+                    onValueChange = {
+                        fNameText = it
+                    })
+
+                Spacer(Modifier.height(MediumPadding2))
+
+                Row {
+                    Text(
+                        "Address",
+                        style = TextStyle(
+                            fontSize = 20.sp, fontFamily = interRegular
+                        ),
+                    )
+                    Spacer(Modifier.weight(1f))
+                }
+
+                Spacer(Modifier.height(SmallPadding))
+
+                CustomTextField(modifier = Modifier,
+                    text = "Enter your address",
+                    bgColor = Color.White,
+                    borderColor = buttonColor,
+                    textColor = buttonColor,
+                    textValue = addressText,
+                    borderRad = 5,
+                    keyboardType = KeyboardType.Text,
+                    error = addressError,
+
+                    onValueChange = {
+                        addressText = it
+                    })
+
+                Spacer(Modifier.height(MediumPadding2))
+
+                Row {
+                    Text(
+                        "Phone No", style = TextStyle(
+                            fontSize = 20.sp, fontFamily = interRegular
+                        )
+                    )
+                    Spacer(Modifier.weight(1f))
+                }
+
+                Spacer(Modifier.height(SmallPadding))
+
+                CustomTextField(modifier = Modifier,
+                    text = "",
+                    bgColor = Color.White,
+                    borderColor = buttonColor,
+                    textColor = buttonColor,
+                    prefixText = "+92",
+                    textValue = phoneText,
+                    borderRad = 5,
+                    keyboardType = KeyboardType.Phone,
+                    error = phoneError,
+                    onValueChange = {
+                        if (it.length <= phoneMaxLength) phoneText = it
+                    })
+
+                Spacer(Modifier.height(MediumPadding2))
+
+                Row {
+                    Text(
+                        "CNIC", style = TextStyle(
+                            fontSize = 20.sp, fontFamily = interRegular
+                        )
+                    )
+                    Spacer(Modifier.weight(1f))
+                }
+
+                Spacer(Modifier.height(SmallPadding))
+
+                CustomTextField(modifier = Modifier,
+                    text = "Enter your CNIC",
+                    bgColor = Color.White,
+                    borderColor = buttonColor,
+                    textColor = buttonColor,
+                    textValue = cnicText,
+                    borderRad = 5,
+                    keyboardType = KeyboardType.Number,
+                    error = cnicError,
+
+                    onValueChange = {
+                        if (it.length <= cnicMaxLength) cnicText = it
+                    })
+
+                Spacer(Modifier.height(MediumPadding2))
+
+                CustomButton(
+                    text = "Register",
+                    color = buttonColor,
+                    textSize = 17,
+                    textColor = Color.White,
+                    isLoading = isLoading,
+                    radius = 8,
+                    height = 70,
+                    modifier = Modifier
+                ) {
+                    nameError = null
+                    fNameError = null
+                    addressError = null
+                    phoneError = null
+                    cnicError = null
+
+                    if (nameText.isEmpty()) {
+                        nameError = "Please enter your name"
+                        return@CustomButton
+                    }
+                    if (fNameText.isEmpty()) {
+                        fNameError = "Please enter your father's name"
+                        return@CustomButton
+                    }
+                    if (addressText.isEmpty()) {
+                        addressError = "Please enter your address"
+                        return@CustomButton
+                    }
+                    val numError = isValidPhoneNumber(phoneText)
+                    if (!numError.isNullOrEmpty()) {
+                        phoneError = numError
+                        return@CustomButton
+                    }
+                    val cNICError = isValidCNIC(cnicText)
+                    if (!cNICError.isNullOrEmpty()) {
+                        cnicError = cNICError
+                        return@CustomButton
+                    }
+
+                    isLoading = true
+
+                    authViewModel.registerUser(
+                        RegisterRequest(
+                            address = addressText,
+                            cnic = cnicText,
+                            email = email!!,
+                            father_name = fNameText,
+                            mobile = "+92$phoneText",
+                            name = nameText,
+                            password = password!!
+                        )
+                    )
+
+                }
             }
         }
     }

@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bookbank.models.ReturnAndReturnBooksData
+import com.example.bookbank.ui.theme.appColor
 import com.example.bookbank.ui.theme.buttonColor
 import com.example.bookbank.ui.theme.greenColor
 import com.example.bookbank.ui.theme.interBold
@@ -29,10 +30,13 @@ import com.example.bookbank.ui.theme.interRegular
 import com.example.bookbank.ui.theme.redColor
 import com.example.bookbank.ui.theme.yellowColor
 import com.example.bookbank.util.Dimens.MediumPadding1
+import java.util.Locale
 
 @Composable
 fun RequestBookListItem(
-    modifier: Modifier = Modifier, requestBooksData: ReturnAndReturnBooksData, onClick: (Boolean) -> Unit
+    modifier: Modifier = Modifier,
+    requestBooksData: ReturnAndReturnBooksData,
+    onClick: (Boolean) -> Unit
 ) {
 
     Column {
@@ -67,7 +71,12 @@ fun RequestBookListItem(
                 onClick = {
 
                 }, shape = RoundedCornerShape(7.dp), colors = ButtonDefaults.buttonColors(
-                    containerColor = if (requestBooksData.request_status == "Accepted") greenColor else if (requestBooksData.request_status == "Borrowed") yellowColor else redColor,
+                    containerColor = when (requestBooksData.request_status.lowercase(Locale.ROOT)) {
+                        "accepted" -> greenColor
+                        "pending" -> yellowColor
+                        "approved" -> appColor
+                        else -> redColor
+                    },
 
                     ), modifier = Modifier
                     .weight(1f)
