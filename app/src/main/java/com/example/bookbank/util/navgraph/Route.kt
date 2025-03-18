@@ -5,9 +5,7 @@ import android.net.Uri
 sealed class Route(val route: String) {
 
     object AuthScreen : Route(route = "authScreen")
-    object SetProfileScreen : Route(route = "setProfileScreen/{email}/{password}") {
-        fun setUserData(email: String, password: String) = "setProfileScreen/$email/$password"
-    }
+    object RegisterScreen : Route(route = "registerScreen")
 
     object OTPScreen : Route(route = "otpScreen")
     object MainScreen : Route(route = "mainScreen")

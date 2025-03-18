@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -71,7 +72,7 @@ fun BookDetailScreen(
                 IconButton(onClick = {
                     navController.popBackStack()
                 }) {
-                    Icon(imageVector = Icons.Filled.ArrowBackIosNew, contentDescription = null)
+                    Icon(imageVector = Icons.Filled.ArrowBackIosNew, tint = buttonColor, contentDescription = null)
                 }
 
                 Spacer(Modifier.weight(1f))
@@ -98,109 +99,109 @@ fun BookDetailScreen(
                 ),
                 elevation = CardDefaults.cardElevation(10.dp)
             ) {
-                Column(modifier = Modifier.padding(MediumPadding1)) {
-
-                    Text(
-                        book.title, style = TextStyle(
-                            fontSize = 18.sp, color = buttonColor, fontFamily = interBold
-                        ), modifier = Modifier.align(Alignment.Start)
-                    )
-
-                    Text(
-                        book.author, style = TextStyle(
-                            fontSize = 15.sp, color = Color.Gray, fontFamily = interRegular
-                        ), modifier = Modifier.align(Alignment.Start)
-                    )
-
-                    Spacer(Modifier.height(MediumPadding1))
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                LazyColumn(modifier = Modifier.padding(MediumPadding1)) {
+                    item{
 
                         Text(
-                            "Category:", style = TextStyle(
+                            book.title, style = TextStyle(
                                 fontSize = 18.sp, color = buttonColor, fontFamily = interBold
-                            )
+                            ), modifier = Modifier.align(Alignment.Start)
                         )
-
-                        Spacer(Modifier.width(XXSmallPadding))
 
                         Text(
-                            book.category, style = TextStyle(
-                                fontSize = 18.sp, color = buttonColor, fontFamily = interRegular
-                            )
+                            book.author, style = TextStyle(
+                                fontSize = 15.sp, color = Color.Gray, fontFamily = interRegular
+                            ), modifier = Modifier.align(Alignment.Start)
                         )
 
-                    }
+                        Spacer(Modifier.height(MediumPadding1))
 
-                    Spacer(Modifier.height(MediumPadding1))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-
-                        Text(
-                            "Available Copies:", style = TextStyle(
-                                fontSize = 18.sp, color = buttonColor, fontFamily = interBold
+                            Text(
+                                "Category:", style = TextStyle(
+                                    fontSize = 18.sp, color = buttonColor, fontFamily = interBold
+                                )
                             )
-                        )
 
-                        Spacer(Modifier.width(XXSmallPadding))
+                            Spacer(Modifier.width(XXSmallPadding))
 
-                        Text(
-                            "${book.availableCopies} left", style = TextStyle(
-                                fontSize = 18.sp, color = buttonColor, fontFamily = interRegular
+                            Text(
+                                book.category, style = TextStyle(
+                                    fontSize = 18.sp, color = buttonColor, fontFamily = interRegular
+                                )
                             )
-                        )
 
-                    }
-
-                    Spacer(Modifier.height(MediumPadding1))
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-
-                        Text(
-                            "Price:", style = TextStyle(
-                                fontSize = 18.sp, color = buttonColor, fontFamily = interBold
-                            )
-                        )
-
-                        Spacer(Modifier.width(XXSmallPadding))
-
-                        Text(
-                            "${book.price} rs", style = TextStyle(
-                                fontSize = 18.sp, color = buttonColor, fontFamily = interRegular
-                            )
-                        )
-
-                    }
-
-
-
-                    Spacer(Modifier.weight(1f))
-
-                    Row {
-                        Spacer(Modifier.weight(1f))
-
-                        CustomButton(
-                            text = "Add Book",
-                            color = if (book.availableCopies == 0) buttonColor.copy(0.5f) else buttonColor,
-                            textSize = 15,
-                            textColor = Color.White,
-                            isLoading = false,
-                            radius = 6,
-                            height = 40,
-                            modifier = Modifier
-                                .fillMaxWidth(0.6f)
-                        ) {
-                            if (book.availableCopies != 0) {
-                                val res = bookViewModel.insertBooksForOrder(book, context)
-                                if (res) {
-                                    utilViewModel.increaseCart()
-                                }
-                            }
                         }
 
-                        Spacer(Modifier.weight(1f))
-                    }
+                        Spacer(Modifier.height(MediumPadding1))
 
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+
+                            Text(
+                                "Available Copies:", style = TextStyle(
+                                    fontSize = 18.sp, color = buttonColor, fontFamily = interBold
+                                )
+                            )
+
+                            Spacer(Modifier.width(XXSmallPadding))
+
+                            Text(
+                                "${book.availableCopies} left", style = TextStyle(
+                                    fontSize = 18.sp, color = buttonColor, fontFamily = interRegular
+                                )
+                            )
+
+                        }
+
+                        Spacer(Modifier.height(MediumPadding1))
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+
+                            Text(
+                                "Price:", style = TextStyle(
+                                    fontSize = 18.sp, color = buttonColor, fontFamily = interBold
+                                )
+                            )
+
+                            Spacer(Modifier.width(XXSmallPadding))
+
+                            Text(
+                                "${book.price} rs", style = TextStyle(
+                                    fontSize = 18.sp, color = buttonColor, fontFamily = interRegular
+                                )
+                            )
+
+                        }
+
+                        Spacer(Modifier.height(MediumPadding1))
+
+                        Row {
+                            Spacer(Modifier.weight(1f))
+
+                            CustomButton(
+                                text = "Add Book",
+                                color = if (book.availableCopies == 0) buttonColor.copy(0.5f) else buttonColor,
+                                textSize = 15,
+                                textColor = Color.White,
+                                isLoading = false,
+                                radius = 6,
+                                height = 40,
+                                modifier = Modifier
+                                    .fillMaxWidth(0.6f)
+                            ) {
+                                if (book.availableCopies != 0) {
+                                    val res = bookViewModel.insertBooksForOrder(book, context)
+                                    if (res) {
+                                        utilViewModel.increaseCart()
+                                    }
+                                }
+                            }
+
+                            Spacer(Modifier.weight(1f))
+                        }
+
+                    }
                 }
             }
 

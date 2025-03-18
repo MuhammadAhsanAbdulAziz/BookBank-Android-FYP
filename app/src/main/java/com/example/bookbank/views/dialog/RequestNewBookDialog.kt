@@ -119,7 +119,7 @@ fun RequestNewBookDialog(
 
                 Image(imageVector = Icons.Filled.Close,
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                    colorFilter = ColorFilter.tint(buttonColor),
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .size(25.dp)

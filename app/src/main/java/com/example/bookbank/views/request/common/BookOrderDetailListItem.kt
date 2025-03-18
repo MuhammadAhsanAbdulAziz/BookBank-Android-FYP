@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.bookbank.R
 import com.example.bookbank.models.BookData
+import com.example.bookbank.ui.theme.buttonColor
 import com.example.bookbank.ui.theme.interBold
 import com.example.bookbank.ui.theme.interRegular
 import com.example.bookbank.util.Dimens.SmallPadding
@@ -50,7 +51,7 @@ fun BookOrderDetailListItem(
 
                 Column(modifier = Modifier.padding(XSmallPadding)) {
                     Text(
-                        bookData.title, style = TextStyle(
+                        bookData.title,color = buttonColor, style = TextStyle(
                             fontSize = 17.sp, fontFamily = interBold
                         ), modifier = Modifier.align(Alignment.Start)
                     )
@@ -58,7 +59,7 @@ fun BookOrderDetailListItem(
                     Spacer(Modifier.height(XXSmallPadding))
 
                     Text(
-                        bookData.author, style = TextStyle(
+                        bookData.author, color = buttonColor, style = TextStyle(
                             fontSize = 15.sp, fontFamily = interRegular
                         ), modifier = Modifier.align(Alignment.Start)
                     )

@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.bookbank.R
-import com.example.bookbank.models.CheckEmailRequest
 import com.example.bookbank.models.LoginRequest
 import com.example.bookbank.models.LoginResponse
 import com.example.bookbank.ui.theme.blueColor
@@ -78,9 +77,7 @@ fun AuthScreen(
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
     var isPasswordShowing by remember { mutableStateOf(false) }
-    var isLogin by remember { mutableStateOf(false) }
     val userResponse by authViewModel.userResponse.collectAsState()
-    val checkEmail by authViewModel.checkEmailResponse.collectAsState()
     var isLoading by remember { mutableStateOf(false) }
     val url = "https://book-bank-dashboard.vercel.app/student"
     val listState = rememberLazyListState()
@@ -94,50 +91,19 @@ fun AuthScreen(
 
             is NetworkResult.Success -> {
                 isLoading = false
-                when (userResponse.data) {
-                    is LoginResponse -> {
-                        val data = userResponse.data as LoginResponse
-                        Log.d("Ahsan", "AuthScreen: ${data.data}")
-                        Log.d("Ahsan", "AuthScreen: ${data.jwt}")
-                        mainViewModel.saveUserData(data.data)
-                        mainViewModel.saveUserToken(data.jwt)
-                    }
-                }
+
+                val data = userResponse.data as LoginResponse
+                Log.d("Ahsan", "AuthScreen: ${data.data}")
+                Log.d("Ahsan", "AuthScreen: ${data.jwt}")
+                mainViewModel.saveUserData(data.data)
+                mainViewModel.saveUserToken(data.jwt)
+                authViewModel.resetState()
 
             }
 
             is NetworkResult.Error -> {
                 isLoading = false
                 Toast.makeText(context, userResponse.error.toString(), Toast.LENGTH_SHORT).show()
-            }
-
-            else -> {
-                // Handle Idle or other states
-                isLoading = false
-            }
-        }
-    }
-
-    LaunchedEffect(checkEmail) {
-        when (checkEmail) {
-            is NetworkResult.Loading -> {
-                isLoading = true
-            }
-
-            is NetworkResult.Success -> {
-                isLoading = false
-                navController.navigate(
-                    Route.SetProfileScreen.setUserData(
-                        emailText, passwordText
-                    )
-                )
-                authViewModel.resetCheckEmailState()
-                isLogin = true
-            }
-
-            is NetworkResult.Error -> {
-                isLoading = false
-                Toast.makeText(context, checkEmail.error.toString(), Toast.LENGTH_SHORT).show()
             }
 
             else -> {
@@ -274,7 +240,7 @@ fun AuthScreen(
                 Spacer(Modifier.height(MediumPadding2))
 
                 CustomButton(
-                    text = if (isLogin) "Sign In" else "Sign Up",
+                    text = "Sign In",
                     color = buttonColor,
                     textSize = 17,
                     textColor = Color.White,
@@ -298,21 +264,11 @@ fun AuthScreen(
 
                     isLoading = true
 
-                    if (!isLogin) {
-                        authViewModel.checkEmail(CheckEmailRequest(email = emailText))
-
-//                    navController.navigate(
-//                        Route.SetProfileScreen.setUserData(
-//                            emailText, passwordText
-//                        )
-//                    )
-                    } else {
-                        authViewModel.loginUser(
-                            LoginRequest(
-                                email = emailText, password = passwordText
-                            )
+                    authViewModel.loginUser(
+                        LoginRequest(
+                            email = emailText, password = passwordText
                         )
-                    }
+                    )
 
                 }
 
@@ -322,7 +278,7 @@ fun AuthScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        if (isLogin) "Don't have an account?" else "Already have an account?",
+                        "Don't have an account?",
                         style = TextStyle(
                             fontSize = 17.sp, fontFamily = interRegular, color = buttonColor
                         )
@@ -330,32 +286,12 @@ fun AuthScreen(
 
                     Spacer(Modifier.width(XSmallPadding))
 
-                    Text(if (isLogin) "Sign Up" else "Sign In", style = TextStyle(
+                    Text("Sign Up", style = TextStyle(
                         fontSize = 17.sp, fontFamily = interRegular, color = blueColor
                     ), modifier = Modifier.clickable {
-                        isLogin = !isLogin
+                        navController.navigate(Route.RegisterScreen.route)
                     })
-                }/*
-                        Spacer(Modifier.height(MediumPadding1))
-
-                        Text(
-                            "Or with", style = TextStyle(
-                                fontSize = 17.sp, fontFamily = interRegular, color = buttonColor
-                            )
-                        )
-
-                        Spacer(Modifier.height(MediumPadding1))
-
-                        GoogleButton(
-                            text = "Google",
-                            color = Color.White,
-                            textSize = 17,
-                            textColor = buttonColor,
-                            isLoading = false,
-                            radius = 7,
-                            height = 70,
-                            modifier = Modifier
-                        ) { }*/
+                }
 
             }
         }

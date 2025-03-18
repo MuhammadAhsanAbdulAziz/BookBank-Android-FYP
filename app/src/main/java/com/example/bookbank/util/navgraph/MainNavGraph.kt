@@ -13,7 +13,7 @@ import com.example.bookbank.models.BookData
 import com.example.bookbank.viewmodels.BookViewModel
 import com.example.bookbank.viewmodels.MainViewModel
 import com.example.bookbank.viewmodels.UtilViewModel
-import com.example.bookbank.views.donate.DonateScreen
+import com.example.bookbank.views.donate.SupportScreen
 import com.example.bookbank.views.home.HomeScreen
 import com.example.bookbank.views.home.common.BookDetailScreen
 import com.example.bookbank.views.notification.NotificationScreen
@@ -67,7 +67,7 @@ fun MainNavGraph(
                 )
             },
         ) {
-            DonateScreen(utilViewModel = utilViewModel)
+            SupportScreen(utilViewModel = utilViewModel,mainViewModel = mainViewModel)
         }
 
         composable(

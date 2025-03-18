@@ -128,7 +128,7 @@ fun UpdateProfile(navController: NavController, mainViewModel: MainViewModel, st
                     IconButton(onClick = {
                         navController.popBackStack()
                     }) {
-                        Icon(imageVector = Icons.Filled.ArrowBackIosNew, contentDescription = null)
+                        Icon(imageVector = Icons.Filled.ArrowBackIosNew, tint = buttonColor, contentDescription = null)
                     }
 
                     Spacer(Modifier.weight(1f))

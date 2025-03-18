@@ -1,39 +1,46 @@
 package com.example.bookbank.views.donate.common
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.bookbank.R
 import com.example.bookbank.ui.theme.buttonColor
 import com.example.bookbank.ui.theme.interBold
-import com.example.bookbank.ui.theme.interRegular
 import com.example.bookbank.ui.theme.textColor
 import com.example.bookbank.util.Dimens.MediumPadding1
-import com.example.bookbank.util.Dimens.XSmallPadding
+import com.example.bookbank.util.Helper
+import com.example.bookbank.views.common.CustomButton
 
 @Composable
-fun DonateMoney(modifier: Modifier = Modifier) {
+fun ContactSupport(modifier: Modifier = Modifier,name: String,) {
+
+    val context = LocalContext.current
+
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.contactanim))
+    val progress by animateLottieCompositionAsState(
+        composition = composition, iterations = LottieConstants.IterateForever // Infinite loop
+    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -41,16 +48,7 @@ fun DonateMoney(modifier: Modifier = Modifier) {
         modifier = Modifier.fillMaxSize()
     ) {
 
-        Text(
-            "Send Donations To our Account", style = TextStyle(
-                fontSize = 22.sp, fontFamily = interBold, color = textColor
-            )
-        )
-
-        Spacer(Modifier.height(MediumPadding1))
-
-
-        Box(
+/*        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(buttonColor, RoundedCornerShape(10.dp))
@@ -126,6 +124,34 @@ fun DonateMoney(modifier: Modifier = Modifier) {
 
             }
 
+        }*/
+
+        LottieAnimation(
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(300.dp),
+            composition = composition,
+            progress = { progress },
+        )
+
+        Text(
+            "Want to send a donation or have a query ? Reach out to us", style = TextStyle(
+                fontSize = 18.sp, fontFamily = interBold, color = textColor, textAlign = TextAlign.Center
+            )
+        )
+
+        Spacer(Modifier.height(MediumPadding1))
+
+        CustomButton(
+            text = "Contact Us",
+            color = buttonColor,
+            textSize = 16,
+            textColor = Color.White,
+            isLoading = false,
+            radius = 6,
+            height = 50,
+            modifier = Modifier.width(200.dp)
+        ) {
+            Helper.openMailApp(context,name)
         }
 
 

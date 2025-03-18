@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -93,6 +94,8 @@ fun CartDetailDialog(
                 Toast.makeText(context, "Order Successfully placed", Toast.LENGTH_SHORT).show()
                 utilViewModel.triggerCartDialog(false)
                 utilViewModel.emptyCart()
+                bookViewModel.removeAllBooks()
+                bookViewModel.resetBookFormResponseState()
             }
 
             is NetworkResult.Error -> {
@@ -141,9 +144,10 @@ fun CartDetailDialog(
 
                 IconButton(onClick = {
                     utilViewModel.triggerCartDialog(false)
+                    bookViewModel.resetBookFormResponseState()
                 }) {
                     Icon(
-                        imageVector = Icons.Filled.Close,
+                        imageVector = Icons.Filled.Close, tint = buttonColor,
                         contentDescription = null,
                     )
 
@@ -154,7 +158,7 @@ fun CartDetailDialog(
             Spacer(Modifier.height(MediumPadding1))
 
             if (booksToOrder.value.isNotEmpty()) {
-                LazyColumn {
+                LazyColumn(modifier = Modifier.fillMaxHeight(0.5f)) {
                     items(booksToOrder.value.size) {
                         BookOrderDetailListItem(
                             bookData = booksToOrder.value[it],
@@ -246,6 +250,7 @@ fun CartDetailDialog(
                         .weight(1f)
                         .padding(horizontal = XXSmallPadding)
                 ) {
+                    bookViewModel.resetBookFormResponseState()
                     utilViewModel.triggerCartDialog(false)
                 }
 

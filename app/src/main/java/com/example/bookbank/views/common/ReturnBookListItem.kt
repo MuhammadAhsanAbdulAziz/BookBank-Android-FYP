@@ -48,7 +48,7 @@ fun ReturnBookListItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(returnBooksData.form_number.toString(), style = TextStyle(
+            Text(returnBooksData.form_number.toString(),color = buttonColor, style = TextStyle(
                 fontSize = 17.sp,
                 fontFamily = interBold,
                 textDecoration = TextDecoration.Underline
@@ -60,7 +60,7 @@ fun ReturnBookListItem(
 
 
             Text(
-                returnBooksData.book_return_date, style = TextStyle(
+                returnBooksData.book_return_date,color = buttonColor, style = TextStyle(
                     fontSize = 17.sp, fontFamily = interRegular
                 ), textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
             )

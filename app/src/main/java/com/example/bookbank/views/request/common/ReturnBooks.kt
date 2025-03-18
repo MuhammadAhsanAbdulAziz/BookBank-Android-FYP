@@ -69,21 +69,21 @@ fun ReturnBooks(modifier: Modifier = Modifier, bookViewModel: BookViewModel) {
                     horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        "Books ID", style = TextStyle(
+                        "Books ID",color = buttonColor, style = TextStyle(
                             fontSize = 17.sp, fontFamily = interBold
                         ), textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
                     )
 
 
                     Text(
-                        "Return Date", style = TextStyle(
+                        "Return Date",color = buttonColor, style = TextStyle(
                             fontSize = 17.sp, fontFamily = interBold
                         ), textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
                     )
 
 
                     Text(
-                        "Status", style = TextStyle(
+                        "Status",color = buttonColor, style = TextStyle(
                             fontSize = 17.sp, fontFamily = interBold
                         ), textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
                     )
@@ -170,7 +170,7 @@ fun ReturnBooks(modifier: Modifier = Modifier, bookViewModel: BookViewModel) {
 
             }
         } else {
-            BookOrderDetail(formData = bookDetail!!) {
+            BookOrderDetail(formData = bookDetail!!, isRequest = false) {
                 returnDetail = false
             }
         }

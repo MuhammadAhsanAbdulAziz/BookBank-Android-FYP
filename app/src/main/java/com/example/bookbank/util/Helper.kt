@@ -8,6 +8,7 @@ import android.os.StatFs
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
+import com.example.bookbank.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.json.JSONException
 import org.json.JSONObject
@@ -60,21 +61,27 @@ object Helper {
         }
     }
 
-    fun openMailApp(context: Context, senderEmail: String, senderName: String, bodyMessage: String) {
+    fun openMailApp(
+        context: Context,
+        senderName: String,
+    ) {
         val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:") // Only email apps should handle this
-            putExtra(Intent.EXTRA_EMAIL, arrayOf("info@webpromayo.com")) // Receiver email
+            putExtra(Intent.EXTRA_EMAIL, arrayOf("bookbankicc@gmail.com")) // Receiver email
             putExtra(Intent.EXTRA_SUBJECT, "Support Request from $senderName")
             putExtra(
                 Intent.EXTRA_TEXT,
-                "Name: $senderName\nEmail: $senderEmail\n\nMessage:\n$bodyMessage"
+                ""
             )
         }
 
         try {
             context.startActivity(Intent.createChooser(emailIntent, "Choose Email Client"))
         } catch (e: Exception) {
-            Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.no_email_app_found), Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -117,6 +124,8 @@ object Helper {
             responseData.value = NetworkResult.Error("Unknown network error occurred")
         }
     }
+
+
 
     fun getTimeAgo(dateTime: String): String {
         // Parse the given datetime string

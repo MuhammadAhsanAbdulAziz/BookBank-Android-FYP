@@ -13,7 +13,7 @@ import com.example.bookbank.viewmodels.UtilViewModel
 import com.example.bookbank.views.MainScreen
 import com.example.bookbank.views.auth.AuthScreen
 import com.example.bookbank.views.auth.OTPScreen
-import com.example.bookbank.views.auth.SetProfileScreen
+import com.example.bookbank.views.auth.RegisterScreen
 
 @Composable
 fun NavGraph(startDestination: String,utilViewModel: UtilViewModel = UtilViewModel()) {
@@ -43,7 +43,7 @@ fun NavGraph(startDestination: String,utilViewModel: UtilViewModel = UtilViewMod
         }
 
         composable(
-            route = Route.SetProfileScreen.route,
+            route = Route.RegisterScreen.route,
             exitTransition = {
                 slideOutOfContainer(
                     AnimatedContentTransitionScope.SlideDirection.Left, tween(1000)
@@ -55,7 +55,7 @@ fun NavGraph(startDestination: String,utilViewModel: UtilViewModel = UtilViewMod
                 )
             },
         ) {
-            SetProfileScreen(navController = navController,authViewModel = authViewModel)
+            RegisterScreen(navController = navController,authViewModel = authViewModel)
         }
 
         composable(

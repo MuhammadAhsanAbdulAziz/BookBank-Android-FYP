@@ -35,6 +35,10 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun resetState(){
+        authRepository.resetState()
+    }
+
     fun checkEmail(checkEmailRequest: CheckEmailRequest) {
         viewModelScope.launch {
             authRepository.checkEmail(checkEmailRequest)

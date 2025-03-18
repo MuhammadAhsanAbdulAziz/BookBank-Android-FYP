@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Book Bank</string>
+    <string name="no_email_app_found">No email app found</string>
 </resources>

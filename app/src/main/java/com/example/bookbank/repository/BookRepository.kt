@@ -41,6 +41,10 @@ class BookRepository @Inject constructor(private val bookApi: BookApi) {
 
     }
 
+    fun resetBookFormResponseState(){
+        _bookFormResponse.value = NetworkResult.Idle()
+    }
+
     suspend fun getRequestBooks() {
         _requestBooksResponse.value = NetworkResult.Loading()
         val response = bookApi.getRequestBooks()

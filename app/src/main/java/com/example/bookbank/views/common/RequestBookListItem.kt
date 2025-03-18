@@ -49,7 +49,7 @@ fun RequestBookListItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(requestBooksData.form_number.toString(), style = TextStyle(
+            Text(requestBooksData.form_number.toString(),color = buttonColor, style = TextStyle(
                 fontSize = 17.sp,
                 fontFamily = interBold,
                 textDecoration = TextDecoration.Underline
@@ -61,7 +61,7 @@ fun RequestBookListItem(
 
 
             Text(
-                requestBooksData.book_return_date, style = TextStyle(
+                requestBooksData.book_return_date,color = buttonColor, style = TextStyle(
                     fontSize = 17.sp, fontFamily = interRegular
                 ), textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
             )
@@ -83,7 +83,7 @@ fun RequestBookListItem(
                     .fillMaxHeight(0.07f)
             ) {
                 Text(
-                    requestBooksData.request_status, style = TextStyle(
+                    requestBooksData.request_status,color = buttonColor, style = TextStyle(
                         fontSize = 13.sp, fontFamily = interRegular, color = buttonColor
                     )
                 )

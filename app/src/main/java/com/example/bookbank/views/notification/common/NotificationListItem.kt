@@ -34,10 +34,10 @@ fun NotificationListItem(notification: Notification, modifier: Modifier = Modifi
             .padding(vertical = XSmallPadding)
             .shadow(elevation = 20.dp)
             .background(
-                color = if (notification.messages.severity == "normal") Color.White else redColor,
+                color =  Color.White,
                 shape = RoundedCornerShape(8.dp)
             )
-            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+            .border(1.dp, if (notification.messages.severity == "normal") Color.Gray else Color.Red, RoundedCornerShape(8.dp))
 
             .padding(SmallPadding)
     ) {
@@ -46,7 +46,7 @@ fun NotificationListItem(notification: Notification, modifier: Modifier = Modifi
                 Text(
                     "Admin", style = TextStyle(
                         fontSize = 15.sp,
-                        color = buttonColor,
+                        color = if (notification.messages.severity == "normal") buttonColor else Color.Red,
                         fontFamily = interBold,
                         textAlign = TextAlign.Start
                     )
@@ -57,7 +57,7 @@ fun NotificationListItem(notification: Notification, modifier: Modifier = Modifi
                 Text(
                     getTimeAgo(notification.updated_at), style = TextStyle(
                         fontSize = 15.sp,
-                        color = buttonColor,
+                        color = if (notification.messages.severity == "normal") buttonColor else Color.Red,
                         fontFamily = interRegular,
                         textAlign = TextAlign.Start
                     )
@@ -70,7 +70,7 @@ fun NotificationListItem(notification: Notification, modifier: Modifier = Modifi
             Text(
                 notification.messages.text, style = TextStyle(
                     fontSize = 14.sp,
-                    color = buttonColor,
+                    color = if (notification.messages.severity == "normal") buttonColor else Color.Red,
                     fontFamily = interRegular,
                     textAlign = TextAlign.Start
                 )

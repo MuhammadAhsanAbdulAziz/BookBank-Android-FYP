@@ -19,11 +19,11 @@ sealed class BottomBarScreen(
     )
 
     // for report
-    object Donate: BottomBarScreen(
+    object Support: BottomBarScreen(
         route = "donateScreen",
-        title = "Donate",
-        icon = R.drawable.volunteer_activism_24px,
-        icon_focused = R.drawable.volunteer_activism_24px
+        title = "Support",
+        icon = R.drawable.contact,
+        icon_focused = R.drawable.contact
     )
 
     object Notification: BottomBarScreen(

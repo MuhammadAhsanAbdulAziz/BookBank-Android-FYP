@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,8 +13,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -36,7 +38,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.bookbank.R
 import com.example.bookbank.models.RegisterRequest
 import com.example.bookbank.ui.theme.buttonColor
@@ -46,6 +47,8 @@ import com.example.bookbank.util.Dimens.MediumPadding1
 import com.example.bookbank.util.Dimens.MediumPadding2
 import com.example.bookbank.util.Dimens.SmallPadding
 import com.example.bookbank.util.Helper.isValidCNIC
+import com.example.bookbank.util.Helper.isValidEmail
+import com.example.bookbank.util.Helper.isValidPassword
 import com.example.bookbank.util.Helper.isValidPhoneNumber
 import com.example.bookbank.util.NetworkResult
 import com.example.bookbank.util.customOverscroll
@@ -55,13 +58,9 @@ import com.example.bookbank.views.common.CustomTextField
 import kotlin.math.roundToInt
 
 @Composable
-fun SetProfileScreen(
+fun RegisterScreen(
     navController: NavController, authViewModel: AuthViewModel, modifier: Modifier = Modifier
 ) {
-
-    val backStackEntry = navController.currentBackStackEntryAsState()
-    val email = backStackEntry.value?.arguments?.getString("email")
-    val password = backStackEntry.value?.arguments?.getString("password")
 
     var nameText by remember { mutableStateOf("") }
     var fNameText by remember { mutableStateOf("") }
@@ -73,6 +72,11 @@ fun SetProfileScreen(
     var addressError by remember { mutableStateOf<String?>(null) }
     var phoneError by remember { mutableStateOf<String?>(null) }
     var cnicError by remember { mutableStateOf<String?>(null) }
+    var emailText by remember { mutableStateOf("") }
+    var passwordText by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+    var isPasswordShowing by remember { mutableStateOf(false) }
     val userResponse by authViewModel.userResponse.collectAsState()
     var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -90,6 +94,7 @@ fun SetProfileScreen(
             is NetworkResult.Success -> {
                 isLoading = false
                 Toast.makeText(context, "Account created successfully", Toast.LENGTH_SHORT).show()
+                authViewModel.resetState()
                 navController.popBackStack()
 
             }
@@ -123,8 +128,8 @@ fun SetProfileScreen(
                 )
                 .offset { IntOffset(0, animatedOverscrollAmount.roundToInt()) },
 
-        ) {
-            item{
+            ) {
+            item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
 
                     IconButton(onClick = {
@@ -198,6 +203,33 @@ fun SetProfileScreen(
                     error = fNameError,
                     onValueChange = {
                         fNameText = it
+                    })
+
+                Spacer(Modifier.height(MediumPadding2))
+
+                Row {
+                    Text(
+                        "Email", style = TextStyle(
+                            fontSize = 20.sp, fontFamily = interRegular
+                        )
+                    )
+                    Spacer(Modifier.weight(1f))
+                }
+
+                Spacer(Modifier.height(SmallPadding))
+
+                CustomTextField(modifier = Modifier,
+                    text = "Enter your Email",
+                    bgColor = Color.White,
+                    borderColor = buttonColor,
+                    textColor = buttonColor,
+                    textValue = emailText,
+                    borderRad = 5,
+                    isPasswordField = false,
+                    error = emailError,
+                    keyboardType = KeyboardType.Email,
+                    onValueChange = {
+                        emailText = it
                     })
 
                 Spacer(Modifier.height(MediumPadding2))
@@ -284,6 +316,50 @@ fun SetProfileScreen(
 
                 Spacer(Modifier.height(MediumPadding2))
 
+                Row {
+                    Text(
+                        "Password", style = TextStyle(
+                            fontSize = 20.sp, fontFamily = interRegular
+                        )
+                    )
+                    Spacer(Modifier.weight(1f))
+                }
+
+                Spacer(Modifier.height(SmallPadding))
+
+                CustomTextField(modifier = Modifier,
+                    text = "Enter your password",
+                    bgColor = Color.White,
+                    borderColor = buttonColor,
+                    textColor = buttonColor,
+                    textValue = passwordText,
+                    borderRad = 5,
+                    keyboardType = KeyboardType.Password,
+                    isPasswordField = !isPasswordShowing,
+                    error = passwordError,
+                    trailingIcon = {
+                        if (isPasswordShowing) {
+                            IconButton(onClick = { isPasswordShowing = false }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Visibility,
+                                    contentDescription = "hide_password"
+                                )
+                            }
+                        } else {
+                            IconButton(onClick = { isPasswordShowing = true }) {
+                                Icon(
+                                    imageVector = Icons.Filled.VisibilityOff,
+                                    contentDescription = "hide_password"
+                                )
+                            }
+                        }
+                    },
+                    onValueChange = {
+                        passwordText = it
+                    })
+
+                Spacer(Modifier.height(MediumPadding2))
+
                 CustomButton(
                     text = "Register",
                     color = buttonColor,
@@ -299,6 +375,12 @@ fun SetProfileScreen(
                     addressError = null
                     phoneError = null
                     cnicError = null
+                    emailError = null
+                    passwordError = null
+
+                    val isEmailValid = isValidEmail(emailText)
+                    val isPasswordValid = isValidPassword(passwordText)
+                    val numError = isValidPhoneNumber(phoneText)
 
                     if (nameText.isEmpty()) {
                         nameError = "Please enter your name"
@@ -308,11 +390,16 @@ fun SetProfileScreen(
                         fNameError = "Please enter your father's name"
                         return@CustomButton
                     }
+
+                    if (!isEmailValid) {
+                        emailError = "Please enter valid email"
+                        return@CustomButton
+                    }
                     if (addressText.isEmpty()) {
                         addressError = "Please enter your address"
                         return@CustomButton
                     }
-                    val numError = isValidPhoneNumber(phoneText)
+
                     if (!numError.isNullOrEmpty()) {
                         phoneError = numError
                         return@CustomButton
@@ -322,6 +409,10 @@ fun SetProfileScreen(
                         cnicError = cNICError
                         return@CustomButton
                     }
+                    if (isPasswordValid != null) {
+                        passwordError = isPasswordValid
+                        return@CustomButton
+                    }
 
                     isLoading = true
 
@@ -329,11 +420,11 @@ fun SetProfileScreen(
                         RegisterRequest(
                             address = addressText,
                             cnic = cnicText,
-                            email = email!!,
+                            email = emailText,
                             father_name = fNameText,
                             mobile = "+92$phoneText",
                             name = nameText,
-                            password = password!!
+                            password = passwordText
                         )
                     )
 

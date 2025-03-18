@@ -70,21 +70,21 @@ fun RequestBooks(modifier: Modifier = Modifier, bookViewModel: BookViewModel) {
             ) {
                 Text(
                     "Books ID", style = TextStyle(
-                        fontSize = 17.sp, fontFamily = interBold
+                        fontSize = 17.sp,color = buttonColor, fontFamily = interBold
                     ), textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
                 )
 
 
                 Text(
                     "Return Date", style = TextStyle(
-                        fontSize = 17.sp, fontFamily = interBold
+                        fontSize = 17.sp, color = buttonColor,fontFamily = interBold
                     ), textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
                 )
 
 
                 Text(
                     "Status", style = TextStyle(
-                        fontSize = 17.sp, fontFamily = interBold
+                        fontSize = 17.sp,color = buttonColor, fontFamily = interBold
                     ), textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
                 )
             }
@@ -164,7 +164,7 @@ fun RequestBooks(modifier: Modifier = Modifier, bookViewModel: BookViewModel) {
                 }
             }
         } else {
-            BookOrderDetail(formData = bookDetail!!) {
+            BookOrderDetail(formData = bookDetail!!, isRequest = true) {
                 returnDetail = false
             }
         }

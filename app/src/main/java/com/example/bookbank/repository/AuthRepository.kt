@@ -45,6 +45,10 @@ class AuthRepository @Inject constructor(private val authApi: AuthApi) {
 
     }
 
+    fun resetState(){
+        _userResponse.value = NetworkResult.Idle()
+    }
+
     fun resetCheckEmailState() {
         _checkEmailResponse.value = NetworkResult.Idle() // Replace with your idle state
     }

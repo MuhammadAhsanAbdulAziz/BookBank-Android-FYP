@@ -89,6 +89,7 @@ fun MainScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
+
                 .padding(it),
 
 
@@ -146,7 +147,7 @@ fun MainScreen(
 fun BottomBar(navController: NavHostController) {
     val screens = listOf(
         BottomBarScreen.Home,
-        BottomBarScreen.Donate,
+        BottomBarScreen.Support,
         BottomBarScreen.Notification,
         BottomBarScreen.Request,
         BottomBarScreen.Profile

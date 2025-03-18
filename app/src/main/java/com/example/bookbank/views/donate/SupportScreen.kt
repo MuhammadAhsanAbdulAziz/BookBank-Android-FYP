@@ -6,25 +6,30 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.bookbank.util.Dimens.MediumPadding1
 import com.example.bookbank.util.Dimens.SmallPadding
+import com.example.bookbank.viewmodels.MainViewModel
 import com.example.bookbank.viewmodels.UtilViewModel
 import com.example.bookbank.views.common.CategoriesTab
 import com.example.bookbank.views.donate.common.DonateBooks
-import com.example.bookbank.views.donate.common.DonateMoney
+import com.example.bookbank.views.donate.common.ContactSupport
 
 @Composable
-fun DonateScreen(modifier: Modifier = Modifier,utilViewModel: UtilViewModel) {
-    val tabs = listOf("Books","Money")
+fun SupportScreen(
+    modifier: Modifier = Modifier,
+    utilViewModel: UtilViewModel,
+    mainViewModel: MainViewModel,
+) {
+    val tabs = listOf("Books", "Contact Us")
     var selectedTab by remember { mutableIntStateOf(0) }
+    val userData by mainViewModel.readUserData().collectAsState(initial = null)
 
     Box(
         modifier = Modifier
@@ -35,16 +40,18 @@ fun DonateScreen(modifier: Modifier = Modifier,utilViewModel: UtilViewModel) {
         Column {
 
 
-            CategoriesTab(tabs){
+            CategoriesTab(tabs) {
                 selectedTab = it
             }
 
             Spacer(Modifier.height(MediumPadding1))
 
-            if(selectedTab == 0) {
-                DonateBooks(utilViewModel = utilViewModel)
+            if (selectedTab == 0) {
+                DonateBooks(
+                    utilViewModel = utilViewModel
+                )
             } else {
-                DonateMoney()
+                ContactSupport(name = userData?.name ?: "",)
             }
 
 

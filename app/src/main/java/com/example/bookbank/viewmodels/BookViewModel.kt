@@ -50,6 +50,10 @@ class BookViewModel @Inject constructor(
         }
     }
 
+    fun resetBookFormResponseState(){
+        bookRepository.resetBookFormResponseState()
+    }
+
     fun searchBooks(query: String) {
         viewModelScope.launch {
             bookRepository.searchBooks(query)
@@ -86,12 +90,17 @@ class BookViewModel @Inject constructor(
 
     fun insertBooksForOrder(book: BookData, context: Context): Boolean {
         // Check if the book already exists in the list based on its unique id
-        if (_booksForOrder.value.none { existingBook -> existingBook.title == book.title }) {
-            // If the book does not exist, add it to the list
-            _booksForOrder.value += book
-            return true
+        if(_booksForOrder.value.size < 5) {
+            if (_booksForOrder.value.none { existingBook -> existingBook.title == book.title }) {
+                // If the book does not exist, add it to the list
+                _booksForOrder.value += book
+                return true
+            } else {
+                Toast.makeText(context, "Book is already in cart", Toast.LENGTH_SHORT).show()
+                return false
+            }
         } else {
-            Toast.makeText(context, "Book is already in cart", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "You can not add more than 5 books", Toast.LENGTH_SHORT).show()
             return false
         }
     }
@@ -99,6 +108,10 @@ class BookViewModel @Inject constructor(
     fun removeBooksForOrder(book: BookData) {
         _booksForOrder.value = _booksForOrder.value.filterNot { it == book }
 
+    }
+
+    fun removeAllBooks(){
+        _booksForOrder.value = emptyList()
     }
 
 }
